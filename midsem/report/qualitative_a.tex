@@ -1,0 +1,33 @@
+\begin{figure}[H]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{3.3cm}p{13.25cm}c@{}}
+\toprule
+\multicolumn{3}{@{}p{17.1cm}@{}}{\textbf{(a) Unseen entities (four names, a chain of three relations).} \dn{महावीर, पुष्पा, अंकुर और नूतन चार दोस्त हैं। नूतन पुष्पा से बड़ी है। अंकुर नूतन से बड़ा है। महावीर की आयु अंकुर से अधिक है। इनमें से किसकी आयु सबसे अधिक है?} \hfill gold: \dn{महावीर}}\\
+\midrule
+Full FT (Phase 3) & \dn{नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर है। अर्थात् नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर है। क्रम: चंचल > श्रुति > अंकुर > नूतन > पुष्पा है। अतः सबसे अधिक}\,\ldots \quad$\rightarrow$\,\dn{उत्तर: चंचल} & $\times$\\
+Best LoRA ($r{=}16$) & \dn{नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर है। अर्थात् नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर है। क्रम: महावीर > अंकुर > नूतन > पुष्पा है। अतः सबसे अधिक आयु}\,\ldots \quad$\rightarrow$\,\dn{उत्तर: महावीर} & \checkmark\\
+DPO $\beta{=}0.1$, chosen & \dn{नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर है। अर्थात् नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर है। क्रम: महावीर > अंकुर > नूतन > पुष्पा है। अतः सबसे अधिक आयु}\,\ldots \quad$\rightarrow$\,\dn{उत्तर: महावीर} & \checkmark\\
+DPO $\beta{=}0.5$, chosen & \dn{नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर है। अर्थात् नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर और महावीर > अंकुर है। क्रम: महावीर > अंकुर > नूतन > अंकुर > नूतन >}\,\ldots \quad \textit{(no answer line before the 128-token limit)} & $\times$\\
+DPO $\beta{=}0.1$, fixed & \dn{नूतन > पुष्पा और अंकुर > नूतन और महावीर > अंकुर और महावीर > अंकुर है। अर्थात् नूतन > पुष्पा और अंकुर > नूतन > पुष्पा और महावीर > अंकुर और महावीर > अंकुर और महावीर > अंकुर >}\,\ldots \quad \textit{(no answer line before the 128-token limit)} & $\times$\\
+\midrule
+\multicolumn{3}{@{}p{17.1cm}@{}}{\textbf{(b) Unseen entities (two numbers).} \dn{ममता और प्रकाश दो दोस्त हैं। ममता का वजन 55 किग्रा है। प्रकाश का वजन 27 किग्रा है। प्रकाश और ममता में से किसका वजन अधिक है?} \hfill gold: \dn{ममता}}\\
+\midrule
+Full FT (Phase 3) & \dn{55 = ममता और 27 = प्रकाश है। 55 > 27 है, अतः ममता > प्रकाश है।} \quad$\rightarrow$\,\dn{उत्तर: ममता} & \checkmark\\
+Best LoRA ($r{=}16$) & \dn{55 = ममता और 27 = प्रकाश है। 55 > 27 है, अतः ममता > प्रकाश है।} \quad$\rightarrow$\,\dn{उत्तर: प्रकाश} & $\times$\\
+DPO $\beta{=}0.1$, chosen & \dn{55 = ममता और 27 = प्रकाश है। 55 > 27 है, अतः ममता > प्रकाश है।} \quad$\rightarrow$\,\dn{उत्तर: प्रकाश} & $\times$\\
+DPO $\beta{=}0.5$, chosen & \dn{55 = ममता और 27 = प्रकाश है। 55 > 27 है, अतः ममता > प्रकाश है।} \quad$\rightarrow$\,\dn{उत्तर: प्रकाश} & $\times$\\
+DPO $\beta{=}0.1$, fixed & \dn{55 = ममता और 27 = प्रकाश है। 55 > 27 है, अतः ममता > प्रकाश है।} \quad$\rightarrow$\,\dn{उत्तर: प्रकाश} & $\times$\\
+\midrule
+\multicolumn{3}{@{}p{17.1cm}@{}}{\textbf{(c) Unseen wording (three numbers, held-out phrasing).} \dn{अमित, महेश और दिनेश के बारे में कुछ जानकारी दी गई है। महेश का भार 31 किग्रा है। दिनेश का भार 40 किग्रा है। अमित का भार 29 किग्रा है। बताइए, सबसे कम वजन किसका है?} \hfill gold: \dn{अमित}}\\
+\midrule
+Full FT (Phase 3) & \dn{31 = महेश और 31 = महेश और 29 = दिनेश है। सबसे कम मान 31 = महेश है।} \quad$\rightarrow$\,\dn{उत्तर: महेश} & $\times$\\
+Best LoRA ($r{=}16$) & \dn{31 = महेश और 40 = महेश और 29 = अमित है। सबसे कम मान 29 = अमित है।} \quad$\rightarrow$\,\dn{उत्तर: अमित} & \checkmark\\
+DPO $\beta{=}0.1$, chosen & \dn{31 = महेश और 40 = महेश और 29 = अमित है। सबसे कम मान 31 = महेश है।} \quad$\rightarrow$\,\dn{उत्तर: महेश} & $\times$\\
+DPO $\beta{=}0.5$, chosen & \dn{31 = महेश और 40 = महेश और 29 = अमित है। सबसे कम मान 31 = महेश है।} \quad$\rightarrow$\,\dn{उत्तर: महेश} & $\times$\\
+DPO $\beta{=}0.1$, fixed & \dn{31 = महेश और 40 = महेश और 29 = अमित है। सबसे कम मान 31 = अमित है।} \quad$\rightarrow$\,\dn{उत्तर: अमित} & \checkmark\\
+\bottomrule
+\end{tabular}
+\caption{A4: example generations on the test sets (3 of the 6 questions per set whose outputs every evaluation saves, picked to show the error types; best LoRA: $r=16$, seed 43; chosen DPO: seed 42; fixed: LR $10^{-4}$, 500 steps). (a) Full FT writes names from the training set (\dn{चंचल}, \dn{श्रुति}: never in the test set) that are not in the question; the chosen $\beta=0.5$ model and the over-optimised $\beta=0.1$ model loop without ever writing the answer line. (b) Every LoRA and DPO model writes the right comparison in the chain (55 \textgreater{} 27, so the first name) and then names the other person. (c) Under held-out wording the chains bind numbers to the wrong names.}
+\label{fig:qualA}
+\end{figure}

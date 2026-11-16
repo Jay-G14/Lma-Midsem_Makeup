@@ -1,0 +1,55 @@
+{
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "batch_size": 8,
+  "steps": 300,
+  "rows": [
+    {
+      "config": "full finetune (Phase 3)",
+      "rank": null,
+      "trainable_params": 26268672,
+      "weights_mb": 107.1,
+      "grad_mb": 100.21,
+      "optimizer_mb": 200.41,
+      "peak_mb": 2837.5,
+      "steps": 300,
+      "steps_per_second": 11.8,
+      "tokens_per_second": 20696
+    },
+    {
+      "config": "LoRA r=1",
+      "rank": 1,
+      "trainable_params": 24576,
+      "weights_mb": 107.2,
+      "grad_mb": 0.09,
+      "optimizer_mb": 0.19,
+      "peak_mb": 2425.9,
+      "steps": 300,
+      "steps_per_second": 16.64,
+      "tokens_per_second": 29174
+    },
+    {
+      "config": "LoRA r=4",
+      "rank": 4,
+      "trainable_params": 98304,
+      "weights_mb": 107.5,
+      "grad_mb": 0.38,
+      "optimizer_mb": 0.75,
+      "peak_mb": 2427.9,
+      "steps": 300,
+      "steps_per_second": 16.19,
+      "tokens_per_second": 28390
+    },
+    {
+      "config": "LoRA r=16",
+      "rank": 16,
+      "trainable_params": 393216,
+      "weights_mb": 108.6,
+      "grad_mb": 1.5,
+      "optimizer_mb": 3.0,
+      "peak_mb": 2435.8,
+      "steps": 300,
+      "steps_per_second": 16.14,
+      "tokens_per_second": 28310
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "hparams": {
+    "model_path": "hindi/checkpoints/final_model.pt",
+    "tokenizer_path": "hindi/tokenizer/tokenizer.json",
+    "config_path": "hindi/configs/model_config.json",
+    "train_data": "hindi/data/reasoning/train.jsonl",
+    "val_data": "hindi/data/reasoning/val.jsonl",
+    "pretrain_train_data": "hindi/data/processed/train.jsonl",
+    "pretrain_val_data": "hindi/data/processed/val.jsonl",
+    "replay_ratio": 0.15,
+    "output_dir": "hindi/checkpoints/midsem/fullft_s43",
+    "epochs": 5,
+    "batch_size": 8,
+    "learning_rate": 2e-05,
+    "seed": 43,
+    "answer_only": false,
+    "optimizer": "AdamW",
+    "weight_decay": 0.01,
+    "grad_clip": 1.0,
+    "lr_schedule": "constant"
+  },
+  "best_epoch": 5,
+  "epochs": [
+    {
+      "epoch": 0,
+      "train_loss": null,
+      "val_reasoning_loss": 6.395055812835693,
+      "pretrain_ppl": 57.95125889051786
+    },
+    {
+      "epoch": 1,
+      "train_loss": 1.9217069907667954,
+      "val_reasoning_loss": 0.19210325944423676,
+      "pretrain_ppl": 59.46909616834026
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.5594850893842094,
+      "val_reasoning_loss": 0.11262005591392517,
+      "pretrain_ppl": 59.92404464316203
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.4872966238104925,
+      "val_reasoning_loss": 0.08480886685848237,
+      "pretrain_ppl": 60.761801617465935
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.3947600326999474,
+      "val_reasoning_loss": 0.07558790254592895,
+      "pretrain_ppl": 62.05479585249621
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.3613066729638335,
+      "val_reasoning_loss": 0.0714747265279293,
+      "pretrain_ppl": 63.18532300758376
+    }
+  ]
+}

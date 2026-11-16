@@ -1,0 +1,59 @@
+{
+  "judge": "unsloth/Llama-3.2-3B-Instruct-bnb-4bit",
+  "dtype": "bfloat16",
+  "device_map": "cuda",
+  "pairs": 30,
+  "verdicts": 60,
+  "pair_mix": {
+    "direct": 15,
+    "cot": 15
+  },
+  "problems_covered": 15,
+  "pairs_per_problem": {
+    "M02": 3,
+    "M05": 1,
+    "S01": 3,
+    "S02": 2,
+    "S03": 1,
+    "S04": 2,
+    "S05": 3,
+    "S06": 3,
+    "S07": 2,
+    "S08": 2,
+    "S09": 2,
+    "S10": 2,
+    "S12": 2,
+    "S13": 1,
+    "S15": 1
+  },
+  "position_bias_rate": 0.6667,
+  "order_consistent_pairs": 10,
+  "first_position_win_rate": 0.8,
+  "agreement_with_checker_consistent": 0.5,
+  "cohen_kappa_consistent": 0.1379,
+  "agreement_with_checker_all_verdicts": 0.5,
+  "longer_answer_win_rate": 0.6333,
+  "cot_preferred_rate": 0.6333,
+  "top_token_is_A_or_B": 55,
+  "consistent_preferences": {
+    "cot": 9,
+    "direct": 1
+  },
+  "order_averaged": {
+    "agreement_with_checker": 0.5667,
+    "cohen_kappa": 0.1333,
+    "prefers_cot": 22
+  },
+  "by_checker_winner": {
+    "direct": {
+      "pairs": 15,
+      "consistent": 6,
+      "judge_correct_verdicts": 11
+    },
+    "cot": {
+      "pairs": 15,
+      "consistent": 4,
+      "judge_correct_verdicts": 19
+    }
+  }
+}

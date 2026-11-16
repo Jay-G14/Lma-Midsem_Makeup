@@ -1,0 +1,18 @@
+\textbf{Findings} (Figure~\ref{fig:c2judge}).
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{4-bit: position bias dominates.} The judge picks the answer it reads first in \CTwoFirst\% of verdicts, so in \CTwoPosBias\% of the pairs swapping the order swaps the verdict. $p(\text{A})$ averages \QPaDirectFirst\ when ``A'' is the short answer and \QPaCotFirst\ when it is the long chain: the position and length biases add up.
+\item \textbf{fp32: length bias dominates.}
+\begin{itemize}[leftmargin=*,nosep]
+\item Full precision weakens the position effect: the position-bias rate falls to \FpPosBias\%, and \FpConsistent\ pairs are order-consistent.
+\item But every consistent verdict picks the long chain (\FpConsCot\ of \FpConsistent), and the longer answer wins \FpLonger\% of all verdicts.
+\item Where the short answer is the right one, only \FpShortRight\ of \FpShortN\ verdicts choose it.
+\end{itemize}
+\item \textbf{No signal about correctness in either precision.}
+\begin{itemize}[leftmargin=*,nosep]
+\item On order-consistent pairs, agreement with the checker is \CTwoAgree\% (4-bit) and \FpAgree\% (fp32), with $\kappa=\CTwoKappa$ and \FpKappa. The fp32 judge's consistent verdicts never vary (all pick the CoT), and the 4-bit judge's vary once (\CTwoConsDirect\ of \CTwoConsistent), so they carry almost no information.
+\item Averaging both orders gives \CTwoAvgAgree\% and \FpAvgAgree\%.
+\item Quantisation changes \emph{which} bias the judge shows, not whether it can tell right from wrong.
+\end{itemize}
+\end{itemize}
+
+\textbf{Verdict.} No: in both precisions this judge decides by where an answer is placed or how long it is, not by whether it is right ($\kappa\le\CTwoKappa$), so it cannot score C1, where the checker already gives exact ground truth. The first thing I would change is to give the judge the reference answer and accept only verdicts that survive swapping the order; after that, a stronger multilingual judge.

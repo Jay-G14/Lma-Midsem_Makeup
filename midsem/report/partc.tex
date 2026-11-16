@@ -1,0 +1,85 @@
+% ===================== PART C =====================
+\section{Part C: Reasoning and judging}
+\textbf{Model:} Qwen2.5-1.5B-Instruct in bf16 with its default system prompt. Problems \emph{and} prompts are in Hindi; nothing is translated. Code: \texttt{part\_c/}; every reply is in \texttt{data/c1\_outputs.jsonl}.
+
+\subsection*{C1. Does thinking longer help?}
+\textbf{Problems} (\texttt{data/c1\_problems.jsonl}). There are 15 standard problems: boats, pipes, ages, work, a probability of 1/20, percentage, speed, simple interest, mean, a fraction (3/4), area, unit price, time, ratio. The 5 \emph{modified} problems are twins of S01--S05 in the drifting-boat style (M01 is the class example, set on S01's boat), where one key word makes the familiar template wrong:
+\begin{itemize}[leftmargin=*,nosep]
+\item \dn{बहते हुए} (drifting): with the engine off the boat covers only $3\times6=18$\,km, so the trip back at $12-3=9$\,km/h takes 2\,h, not the 10\,h of a powered trip;
+\item \dn{खाली करता} (empties): $1/(\frac14-\frac16)=12$\,h and not 2.4\,h;
+\item \dn{को छोड़कर} (all except 9 died): 9 and not 8;
+\item \dn{होगा} (when Ram will be 40): 35 and not 20;
+\item \dn{सूखती} (shirts dry in parallel): 10\,h and not 5.
+\end{itemize}
+\textbf{Conditions.}
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Direct}, greedy: ``\dn{केवल अंतिम उत्तर एक संख्या के रूप में लिखिए।}''
+\item \emph{Zero-shot CoT}, greedy, $\le$1,024 tokens: ``\dn{आइए चरण-दर-चरण सोचें।} \ldots\ \dn{अंत में 'उत्तर: <संख्या>' लिखिए।}''
+\item \emph{Self-consistency}: the CoT prompt, 5 samples at $T{=}0.7$ with top-$p$ 0.95, then a majority vote over checker-normalised answers.
+\end{itemize}
+Every decoding argument is passed explicitly, so greedy really is argmax: Qwen's shipped config would otherwise add top-$k$ 20 and a repetition penalty of 1.1. Each prompt is decoded on its own, without batch padding, so a problem's replies never depend on the other problems.
+
+\textbf{Checker} (\texttt{part\_c/checker.py}).
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Extraction:} the last \verb|\boxed{}|; otherwise the first number after the last ``\dn{उत्तर}''/``answer''; otherwise the last number; Hindi number words only as a fallback.
+\item \emph{Parsing:} Devanagari digits, thousands separators, $a/b$, \verb|\frac|, scientific notation and \% are parsed into an \emph{exact} fraction, then compared with the gold answer.
+\item 0.05, 1/20, 5E-02, \dn{०.०५} and 5\% are therefore all Fraction(1,\,20); the file's self-tests assert this.
+\item In the runs, S06's ``1/20'' was correctly scored against the gold 0.05.
+\end{itemize}
+
+\begin{table}[h]
+\centering\footnotesize
+\caption{C1: accuracy (\%, correct/n) and mean generated tokens per problem.}
+\begin{tabular}{lcccc}
+\toprule
+Condition & Standard & Modified & Overall & Tokens\\
+\midrule
+Direct (greedy) & \CDirectStd\ (\CDirectStdN) & \CDirectMod\ (\CDirectModN) & \CDirectAll & \CDirectTok\\
+Zero-shot CoT & \CCotStd\ (\CCotStdN) & \CCotMod\ (\CCotModN) & \CCotAll & \CCotTok\\
+Self-consistency, 5 & \CScStd\ (\CScStdN) & \CScMod\ (\CScModN) & \CScAll & \CScTok\\
+\ \ 3 sampling seeds & \CScStdMean$\pm$\CScStdSd & \CScModMean & \CScAllMean$\pm$\CScAllSd & \CScTokMean\\
+\bottomrule
+\end{tabular}\\[1pt]
+{\scriptsize Self-consistency: \CScTokSample\ tokens per sample; per seed (standard): \CScSeedsStd. Modified problems answered with the \emph{template} answer: direct \CDirectTmpl\%, CoT \CCotTmpl\%, SC \CScTmpl\%. A second full run reproduced all 340 replies exactly.}
+\end{table}
+
+\textbf{Findings} (Figure~\ref{fig:c1tokens}).
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{On standard problems, thinking longer helps.} Accuracy goes from \CDirectStd\% (direct) to \CCotStd\% (CoT) to \CScStd\% (self-consistency; \CScStdMean$\pm$\CScStdSd\% over 3 sampling seeds), at about \CCotTokRatio$\times$ and \CScTokRatio$\times$ the generated tokens. Voting helps most where single chains make \emph{idiosyncratic} slips: on S08, S10, S13 and S15 the greedy chain is wrong but every seed's majority is right. It is not monotone, though. On S01 and S05 the direct answer is right, while the chain loops (S01) or computes ``12/6 = 2'' and still answers the original 10 days (S05).
+\item \textbf{On modified problems it does not help: direct \CDirectModN, CoT \CCotModN, self-consistency \CScModN\ in every seed.} The two hits are on different problems (direct on M02, CoT on M05), so length is not what solves them. The model mostly returns or reasons through the familiar template: 8 for ``all except 9'' in every condition, and on M04 the CoT writes ``\dn{30 वर्ष / 2 = 15}''. Voting cannot fix a \emph{systematic} error; it amplifies it: on M03 four of five samples say 8, and on M04 two of the three seeds vote the template 20. Single chains occasionally escape (one of 15 sampled chains gets M05 right), but never a majority. On the drifting boat (M01) nothing comes close to 2\,h: direct gives the engine's 12, the greedy chain keeps repeating ``\dn{दर: 6 घंटे}'' (a speed given in hours) and answers 6, and every seed votes 6.
+\item \textbf{Weakness in Hindi.} The chains really are in Hindi (\CDeva\% of their letters are Devanagari), but they invent methods (S10 takes the mean to be ``the sum of the squares'', 1720), confuse units (S14 answers ``2:30'' when asked for minutes, which the strict checker marks wrong), and \CCotTrunc\ of 20 greedy chains loop until the 1,024-token limit.
+\end{itemize}
+
+\subsection*{C2. Can you trust an LLM judge?}
+\textbf{Pairs} (\texttt{data/c2\_pairs\_with\_verdicts.jsonl}). Each of the \CTwoPairs\ pairs combines Qwen's direct reply with one of its CoT replies to the same problem. The CoT pool is the greedy chain plus all 15 self-consistency samples (3 seeds). Only pairs in which \emph{exactly one} reply is correct are used, so the checker always names a unique better answer:
+\begin{itemize}[leftmargin=*,nosep]
+\item in \CTwoShortRight\ pairs the short direct answer is right and the long chain is wrong (problems \CTwoShortRightProblems);
+\item in \CTwoLongRight\ pairs the long chain is right;
+\item round-robin selection spreads them over \CTwoProblems\ problems.
+\end{itemize}
+\textbf{Judge.} Llama-3.2-3B-Instruct, a different family from Qwen. It sees the Hindi problem with ``Answer A''/``Answer B'' and is asked which is better. Its verdict is the more probable of the next tokens ``A''/``B''. Every pair is judged in both orders, twice:
+\begin{itemize}[leftmargin=*,nosep]
+\item with 4-bit NF4 weights on the laptop (\CTwoTopAB\ of the 60 forced verdicts are also its unconstrained top token);
+\item with full fp32 weights on Ada, to test whether quantisation causes the bias.
+\end{itemize}
+
+\begin{table}[h]
+\centering\footnotesize
+\caption{C2: judge reliability (Llama-3.2-3B judging Qwen2.5-1.5B), 30 pairs $\times$ 2 orders.}
+\begin{tabular}{lcc}
+\toprule
+& 4-bit & fp32\\
+\midrule
+Position-bias rate (of 30 pairs) & \CTwoPosBias\% & \FpPosBias\%\\
+First-shown answer chosen (of 60) & \CTwoFirst\% & \FpFirst\%\\
+Order-consistent pairs (CoT / direct) & \CTwoConsistent\ (\CTwoConsCot/\CTwoConsDirect) & \FpConsistent\ (\FpConsCot/\FpConsDirect)\\
+Agreement with checker, consistent & \CTwoAgree\% & \FpAgree\%\\
+Cohen's $\kappa$, consistent pairs & \CTwoKappa & \FpKappa\\
+Longer answer wins (of 60) & \CTwoLonger\% & \FpLonger\%\\
+Agreement with checker, all 60 & \CTwoAgreeAll\% & \FpAgreeAll\%\\
+Order-averaged agreement / $\kappa$ & \CTwoAvgAgree\% / \CTwoAvgKappa & \FpAvgAgree\% / \FpAvgKappa\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\input{partc_results_c2}

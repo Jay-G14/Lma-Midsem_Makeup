@@ -1,0 +1,29 @@
+\textbf{Results} (Table~\ref{tab:sweep}; Figure~\ref{fig:sweep}).
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{Rank matters a lot when only attention adapts.}
+\begin{itemize}[leftmargin=*,nosep]
+\item $r=1$ stays at chance for every seed and every LR. Its chains have the right format but the wrong content (``\dn{सुषमा > सुषमा}''), and its best validation loss is about 0.49, against \AdaLossSixteen\ at $r=16$.
+\item $r=4$ reaches \AdaAccFourUnEnt\% on unseen entities, and $r=16$ reaches \AdaAccSixteenUnEnt\%.
+\item That puts $r=16$ within about one standard deviation of full finetuning (\FullSeedsUnEnt\% over \FullSeedsN\ seeds) while training 1.5\% of the parameters.
+\end{itemize}
+\item \textbf{Seeds matter as much as the method.}
+\begin{itemize}[leftmargin=*,nosep]
+\item On unseen entities, $r=16$ ranges over \SixteenRangeUnEnt\% across seeds, and full finetuning itself over \FullSeedsRangeUnEnt\%.
+\item My first, single-seed pass (laptop; appendix) drew a weak $r=16$ run (63.1\%) and wrongly concluded that $r=16$ stays far below full finetuning.
+\item Single-run differences of a few points are therefore not interpreted here.
+\end{itemize}
+\item \textbf{Names barely matter; wording does.}
+\begin{itemize}[leftmargin=*,nosep]
+\item Seen and unseen entities score alike for every model.
+\item New wording costs full finetuning \FullSeedsWordDrop\ points (to \FullSeedsUnWord\%) and LoRA $r=16$ \SixteenWordDrop\ (to \AdaAccSixteenUnWord\%), and almost no premise is transcribed correctly (chain EM in the appendix).
+\item The finetuning, full or low-rank, learned the surface templates more than the comparison.
+\item LoRA $r=16$ is the more robust of the two to new wording, consistent with it changing the pretrained model less (drift below).
+\end{itemize}
+\item \textbf{Memory.} LoRA shrinks the AdamW state from \MemOptFull\ MB to \MemOptLoraFour\ MB ($r=4$; \MemOptLoraSixteen\ MB at $r=16$) and the gradients from \MemGradFull\ MB to \MemGradLoraFour\ MB. Yet the peak only drops from \MemPeakFull\ to \MemPeakLoraFour\ MB ($-14\%$): at 26M parameters, activations set the peak.
+\begin{itemize}[leftmargin=*,nosep]
+\item A batch of 8$\times$511 tokens keeps six layers of $8\times8\times511\times511$ attention maps (67 MB each in fp32, stored again for softmax and dropout) and $8\times511\times20{,}000$ logits (327 MB).
+\item LoRA still needs all of them to backpropagate through the frozen blocks.
+\item A LoRA step is 37\% faster (\MemSpeedLoraFour\ vs.\ \MemSpeedFull\ steps/s), because the frozen weights' gradient matmuls are skipped.
+\item For an 8B model the balance flips (B4).
+\end{itemize}
+\end{itemize}

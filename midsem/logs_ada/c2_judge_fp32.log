@@ -1,0 +1,91 @@
+30 pairs: Counter({'direct': 15, 'cot': 15}) | problems 15
+Loading weights:   0%|          | 0/254 [00:00<?, ?it/s]Loading weights:   0%|          | 1/254 [00:10<45:38, 10.82s/it]Loading weights: 100%|██████████| 254/254 [00:10<00:00, 23.41it/s]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+P01 M02 checker: direct | direct-first -> cot 0.134525 | cot-first -> cot 0.749446
+P02 M02 checker: direct | direct-first -> cot 0.175942 | cot-first -> cot 0.518409
+P03 M02 checker: direct | direct-first -> cot 0.310323 | cot-first -> direct 0.358647
+P04 M05 checker: cot | direct-first -> cot 0.241975 | cot-first -> cot 0.701632
+P05 S01 checker: direct | direct-first -> direct 0.777091 | cot-first -> cot 0.634808
+P06 S01 checker: direct | direct-first -> direct 0.660116 | cot-first -> cot 0.689642
+P07 S01 checker: direct | direct-first -> cot 0.371012 | cot-first -> direct 0.46356
+P08 S02 checker: cot | direct-first -> cot 0.139062 | cot-first -> direct 0.402355
+P09 S02 checker: cot | direct-first -> cot 0.210561 | cot-first -> direct 0.415967
+P10 S03 checker: direct | direct-first -> cot 0.293894 | cot-first -> direct 0.44541
+P11 S04 checker: cot | direct-first -> cot 0.13745 | cot-first -> cot 0.944412
+P12 S04 checker: cot | direct-first -> cot 0.35932 | cot-first -> cot 0.859164
+P13 S05 checker: direct | direct-first -> cot 0.427408 | cot-first -> cot 0.721351
+P14 S05 checker: direct | direct-first -> cot 0.08929 | cot-first -> cot 0.601392
+P15 S05 checker: direct | direct-first -> cot 0.241517 | cot-first -> cot 0.655345
+P16 S06 checker: direct | direct-first -> cot 0.30798 | cot-first -> direct 0.329374
+P17 S06 checker: direct | direct-first -> cot 0.228441 | cot-first -> cot 0.87056
+P18 S06 checker: direct | direct-first -> cot 0.163015 | cot-first -> direct 0.476297
+P19 S07 checker: direct | direct-first -> cot 0.124484 | cot-first -> cot 0.731703
+P20 S07 checker: direct | direct-first -> cot 0.366101 | cot-first -> direct 0.455097
+P21 S08 checker: cot | direct-first -> cot 0.189012 | cot-first -> cot 0.927904
+P22 S08 checker: cot | direct-first -> cot 0.498488 | cot-first -> cot 0.929997
+P23 S09 checker: cot | direct-first -> direct 0.735032 | cot-first -> cot 0.86341
+P24 S09 checker: cot | direct-first -> cot 0.29613 | cot-first -> cot 0.717682
+P25 S10 checker: cot | direct-first -> cot 0.338325 | cot-first -> cot 0.515522
+P26 S10 checker: cot | direct-first -> cot 0.286107 | cot-first -> direct 0.353596
+P27 S12 checker: cot | direct-first -> cot 0.274191 | cot-first -> cot 0.65833
+P28 S12 checker: cot | direct-first -> cot 0.486971 | cot-first -> cot 0.845186
+P29 S13 checker: cot | direct-first -> direct 0.83095 | cot-first -> cot 0.705092
+P30 S15 checker: cot | direct-first -> cot 0.332479 | cot-first -> cot 0.893485
+{
+ "judge": "unsloth/Llama-3.2-3B-Instruct",
+ "dtype": "float32",
+ "device_map": "auto",
+ "pairs": 30,
+ "verdicts": 60,
+ "pair_mix": {
+  "direct": 15,
+  "cot": 15
+ },
+ "problems_covered": 15,
+ "pairs_per_problem": {
+  "M02": 3,
+  "M05": 1,
+  "S01": 3,
+  "S02": 2,
+  "S03": 1,
+  "S04": 2,
+  "S05": 3,
+  "S06": 3,
+  "S07": 2,
+  "S08": 2,
+  "S09": 2,
+  "S10": 2,
+  "S12": 2,
+  "S13": 1,
+  "S15": 1
+ },
+ "position_bias_rate": 0.4333,
+ "order_consistent_pairs": 17,
+ "first_position_win_rate": 0.4167,
+ "agreement_with_checker_consistent": 0.5882,
+ "cohen_kappa_consistent": 0.0,
+ "agreement_with_checker_all_verdicts": 0.55,
+ "longer_answer_win_rate": 0.7833,
+ "cot_preferred_rate": 0.7833,
+ "top_token_is_A_or_B": 56,
+ "consistent_preferences": {
+  "cot": 17
+ },
+ "order_averaged": {
+  "agreement_with_checker": 0.5,
+  "cohen_kappa": 0.0,
+  "prefers_cot": 28
+ },
+ "by_checker_winner": {
+  "direct": {
+   "pairs": 15,
+   "consistent": 7,
+   "judge_correct_verdicts": 8
+  },
+  "cot": {
+   "pairs": 15,
+   "consistent": 10,
+   "judge_correct_verdicts": 25
+  }
+ }
+}

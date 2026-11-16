@@ -1,0 +1,20 @@
+{
+  "model_path": "hindi/checkpoints/final_model.pt",
+  "tokenizer_path": "hindi/tokenizer/tokenizer.json",
+  "config_path": "hindi/configs/model_config.json",
+  "train_data": "hindi/data/reasoning/train.jsonl",
+  "val_data": "hindi/data/reasoning/val.jsonl",
+  "pretrain_train_data": "hindi/data/processed/train.jsonl",
+  "pretrain_val_data": "hindi/data/processed/val.jsonl",
+  "replay_ratio": 0.15,
+  "output_dir": "hindi/checkpoints/midsem/fullft_s43",
+  "epochs": 5,
+  "batch_size": 8,
+  "learning_rate": 2e-05,
+  "seed": 43,
+  "answer_only": false,
+  "optimizer": "AdamW",
+  "weight_decay": 0.01,
+  "grad_clip": 1.0,
+  "lr_schedule": "constant"
+}

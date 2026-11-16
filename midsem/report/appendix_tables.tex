@@ -1,0 +1,87 @@
+\subsection*{First pass (laptop, seed 42, LR $10^{-3}$ for every rank): answer EM \% (chain EM)}
+\begin{tabular}{lcccc}\toprule model & val & seen ent. & unseen ent. & unseen word.\\\midrule
+Full FT (Phase 3) & 82.9 (74.5) & 83.9 (81.6) & 81.0 (72.9) & 45.3 (3.1)\\
+LoRA r=1 & 36.0 (3.1) & 32.2 (2.5) & 36.4 (2.8) & 31.3 (1.0)\\
+LoRA r=4 & 54.1 (39.5) & 60.9 (45.9) & 55.8 (40.8) & 44.3 (7.4)\\
+LoRA r=16 & 65.6 (54.8) & 63.5 (56.0) & 63.1 (53.5) & 45.3 (5.5)\\
+DPO $\beta$=0.1 (LR 1e-4, 500 steps) & 35.4 (23.8) & 39.4 (28.6) & 31.9 (22.3) & 32.5 (1.9)\\
+DPO $\beta$=0.5 (LR 1e-4, 500 steps) & 63.0 (53.0) & 69.4 (62.2) & 62.4 (52.0) & 42.8 (5.0)\\
+\bottomrule\end{tabular}
+
+\subsection*{A3: one preference pair per question type (prompt abridged to the question)}
+\begin{footnotesize}
+\textbf{numeric\_pair\_yesno} (the two numbers compared the wrong way round).\\
+\dn{प्रश्न}: \dn{रज़ाई और झाड़ू दो वस्तुएँ हैं। झाड़ू का मूल्य }302 \dn{रुपये है। रज़ाई का मूल्य }884 \dn{रुपये है। क्या झाड़ू का मूल्य रज़ाई से अधिक है}?\\
+\textit{chosen:} 302 = \dn{झाड़ू और }884 = \dn{रज़ाई है। }302 \textless{} 884 \dn{है}, \dn{अतः झाड़ू }\textless{} \dn{रज़ाई है। प्रश्न का दावा झाड़ू }\textgreater{} \dn{रज़ाई है।}
+\dn{उत्तर}: \dn{नहीं}\\
+\textit{rejected:} 302 = \dn{झाड़ू और }884 = \dn{रज़ाई है। }302 \textgreater{} 884 \dn{है}, \dn{अतः झाड़ू }\textgreater{} \dn{रज़ाई है। प्रश्न का दावा झाड़ू }\textgreater{} \dn{रज़ाई है।}
+\dn{उत्तर}: \dn{हाँ}\\[3pt]
+\textbf{transitive\_max} (order built with the two extreme-end entities swapped).\\
+\dn{प्रश्न}: \dn{अर्जुन}, \dn{जयंत}, \dn{मिथुन और मोहिनी चार दोस्त हैं। जयंत की लंबाई अर्जुन से अधिक है। मिथुन जयंत से लंबा है। मिथुन मोहिनी से छोटा है। इनमें से किसकी लंबाई सबसे अधिक है}?\\
+\textit{chosen:} \dn{जयंत }\textgreater{} \dn{अर्जुन और मिथुन }\textgreater{} \dn{जयंत और मिथुन }\textless{} \dn{मोहिनी है। अर्थात् जयंत }\textgreater{} \dn{अर्जुन और मिथुन }\textgreater{} \dn{जयंत और मोहिनी }\textgreater{} \dn{मिथुन है। क्रम}: \dn{मोहिनी }\textgreater{} \dn{मिथुन }\textgreater{} \dn{जयंत }\textgreater{} \dn{अर्जुन है। अतः सबसे अधिक लंबाई मोहिनी की है।}
+\dn{उत्तर}: \dn{मोहिनी}\\
+\textit{rejected:} \dn{जयंत }\textgreater{} \dn{अर्जुन और मिथुन }\textgreater{} \dn{जयंत और मिथुन }\textless{} \dn{मोहिनी है। अर्थात् जयंत }\textgreater{} \dn{अर्जुन और मिथुन }\textgreater{} \dn{जयंत और मोहिनी }\textgreater{} \dn{मिथुन है। क्रम}: \dn{मिथुन }\textgreater{} \dn{मोहिनी }\textgreater{} \dn{जयंत }\textgreater{} \dn{अर्जुन है। अतः सबसे अधिक लंबाई मिथुन की है।}
+\dn{उत्तर}: \dn{मिथुन}\\[3pt]
+\textbf{numeric\_pair\_which} (the two numbers compared the wrong way round).\\
+\dn{प्रश्न}: \dn{मोहिनी और वंदना दो दोस्त हैं। वंदना की आयु }84 \dn{वर्ष है। मोहिनी की आयु }55 \dn{वर्ष है। मोहिनी और वंदना में से किसकी आयु कम है}?\\
+\textit{chosen:} 84 = \dn{वंदना और }55 = \dn{मोहिनी है। }84 \textgreater{} 55 \dn{है}, \dn{अतः वंदना }\textgreater{} \dn{मोहिनी है।}
+\dn{उत्तर}: \dn{मोहिनी}\\
+\textit{rejected:} 84 = \dn{वंदना और }55 = \dn{मोहिनी है। }84 \textless{} 55 \dn{है}, \dn{अतः मोहिनी }\textgreater{} \dn{वंदना है।}
+\dn{उत्तर}: \dn{वंदना}\\[3pt]
+\textbf{verbal\_yesno} (asked relation derived the wrong way round).\\
+\dn{प्रश्न}: \dn{सलोनी और सोनाली दो दोस्त हैं। सलोनी सोनाली से हल्की है। क्या सोनाली का वजन सलोनी से कम है}?\\
+\textit{chosen:} \dn{कथन के अनुसार सलोनी }\textless{} \dn{सोनाली है}, \dn{अतः सोनाली }\textgreater{} \dn{सलोनी है। प्रश्न का दावा सोनाली }\textless{} \dn{सलोनी है।}
+\dn{उत्तर}: \dn{नहीं}\\
+\textit{rejected:} \dn{कथन के अनुसार सलोनी }\textless{} \dn{सोनाली है}, \dn{अतः सोनाली }\textless{} \dn{सलोनी है। प्रश्न का दावा सोनाली }\textless{} \dn{सलोनी है।}
+\dn{उत्तर}: \dn{हाँ}\\[3pt]
+\textbf{numeric\_extremum\_min} (runner-up value picked as the extreme).\\
+\dn{प्रश्न}: \dn{चटाई}, \dn{कीबोर्ड और रबर तीन वस्तुएँ हैं। चटाई का मूल्य }221 \dn{रुपये है। रबर का मूल्य }95 \dn{रुपये है। कीबोर्ड का मूल्य }165 \dn{रुपये है। इनमें से किस वस्तु का मूल्य सबसे कम है}?\\
+\textit{chosen:} 221 = \dn{चटाई और }95 = \dn{रबर और }165 = \dn{कीबोर्ड है। सबसे कम मान }95 = \dn{रबर है।}
+\dn{उत्तर}: \dn{रबर}\\
+\textit{rejected:} 221 = \dn{चटाई और }95 = \dn{रबर और }165 = \dn{कीबोर्ड है। सबसे कम मान }165 = \dn{कीबोर्ड है।}
+\dn{उत्तर}: \dn{कीबोर्ड}\\[3pt]
+\textbf{transitive\_min} (order built with the two extreme-end entities swapped).\\
+\dn{प्रश्न}: \dn{प्रतिभा}, \dn{साधना और कृष्ण तीन दोस्त हैं। प्रतिभा साधना से भारी है। साधना का वजन कृष्ण से अधिक है। इनमें से किसका वजन सबसे कम है}?\\
+\textit{chosen:} \dn{प्रतिभा }\textgreater{} \dn{साधना और साधना }\textgreater{} \dn{कृष्ण है। अर्थात् प्रतिभा }\textgreater{} \dn{साधना और साधना }\textgreater{} \dn{कृष्ण है। क्रम}: \dn{प्रतिभा }\textgreater{} \dn{साधना }\textgreater{} \dn{कृष्ण है। अतः सबसे कम वजन कृष्ण का है।}
+\dn{उत्तर}: \dn{कृष्ण}\\
+\textit{rejected:} \dn{प्रतिभा }\textgreater{} \dn{साधना और साधना }\textgreater{} \dn{कृष्ण है। अर्थात् प्रतिभा }\textgreater{} \dn{साधना और साधना }\textgreater{} \dn{कृष्ण है। क्रम}: \dn{प्रतिभा }\textgreater{} \dn{कृष्ण }\textgreater{} \dn{साधना है। अतः सबसे कम वजन साधना का है।}
+\dn{उत्तर}: \dn{साधना}\\[3pt]
+\textbf{transitive\_yesno} (relation of the asked pair read backwards from the order).\\
+\dn{प्रश्न}: \dn{रमेश}, \dn{योगेश}, \dn{पल्लवी और वंदना चार दोस्त हैं। योगेश वंदना से छोटा है। रमेश पल्लवी से छोटा है। रमेश वंदना से बड़ा है। क्या पल्लवी की आयु योगेश से अधिक है}?\\
+\textit{chosen:} \dn{योगेश }\textless{} \dn{वंदना और रमेश }\textless{} \dn{पल्लवी और रमेश }\textgreater{} \dn{वंदना है। अर्थात् वंदना }\textgreater{} \dn{योगेश और पल्लवी }\textgreater{} \dn{रमेश और रमेश }\textgreater{} \dn{वंदना है। क्रम}: \dn{पल्लवी }\textgreater{} \dn{रमेश }\textgreater{} \dn{वंदना }\textgreater{} \dn{योगेश है। अतः पल्लवी }\textgreater{} \dn{योगेश है। प्रश्न का दावा पल्लवी }\textgreater{} \dn{योगेश है।}
+\dn{उत्तर}: \dn{हाँ}\\
+\textit{rejected:} \dn{योगेश }\textless{} \dn{वंदना और रमेश }\textless{} \dn{पल्लवी और रमेश }\textgreater{} \dn{वंदना है। अर्थात् वंदना }\textgreater{} \dn{योगेश और पल्लवी }\textgreater{} \dn{रमेश और रमेश }\textgreater{} \dn{वंदना है। क्रम}: \dn{पल्लवी }\textgreater{} \dn{रमेश }\textgreater{} \dn{वंदना }\textgreater{} \dn{योगेश है। अतः पल्लवी }\textless{} \dn{योगेश है। प्रश्न का दावा पल्लवी }\textgreater{} \dn{योगेश है।}
+\dn{उत्तर}: \dn{नहीं}\\[3pt]
+\textbf{numeric\_extremum\_max} (runner-up value picked as the extreme).\\
+\dn{प्रश्न}: \dn{वसुधा}, \dn{हिना और अनिल तीन दोस्त हैं। वसुधा की लंबाई }193 \dn{सेमी है। हिना की लंबाई }131 \dn{सेमी है। अनिल की लंबाई }157 \dn{सेमी है। इनमें से किसकी लंबाई सबसे अधिक है}?\\
+\textit{chosen:} 193 = \dn{वसुधा और }131 = \dn{हिना और }157 = \dn{अनिल है। सबसे अधिक मान }193 = \dn{वसुधा है।}
+\dn{उत्तर}: \dn{वसुधा}\\
+\textit{rejected:} 193 = \dn{वसुधा और }131 = \dn{हिना और }157 = \dn{अनिल है। सबसे अधिक मान }157 = \dn{अनिल है।}
+\dn{उत्तर}: \dn{अनिल}\\[3pt]
+\end{footnotesize}
+
+\subsection*{Ada study: LoRA learning-rate grid (seed 42, 5 epochs; choice = lowest validation loss per rank)}
+\begin{tabular}{llcccc}\toprule rank & LR & best val.\ loss (epoch) & val.\ EM & unseen-entity EM & chosen\\\midrule
+$r=1$ & 3e-4 & 0.5045 (5) & 37.8 & 37.3 & \checkmark\\
+$r=1$ & 1e-3 & 0.5145 (5) & 38.0 & 36.5 & \\
+$r=1$ & 3e-3 & 0.6940 (5) & 32.4 & 33.7 & \\
+$r=4$ & 3e-4 & 0.1778 (5) & 42.1 & 47.5 & \\
+$r=4$ & 1e-3 & 0.1627 (5) & 48.7 & 51.0 & \checkmark\\
+$r=4$ & 3e-3 & 0.2397 (4) & 43.5 & 46.1 & \\
+$r=16$ & 3e-4 & 0.0882 (5) & 60.4 & 60.7 & \\
+$r=16$ & 1e-3 & 0.0785 (5) & 73.4 & 70.2 & \checkmark\\
+$r=16$ & 3e-3 & 0.1232 (4) & 69.5 & 67.4 & \\
+\bottomrule\end{tabular}
+
+\subsection*{Ada study: DPO sweep, validation answer EM (\%) of the policy saved every 100 steps (seed 42; step 0 = best LoRA, 80.2)}
+\begin{tabular}{llccccccc}\toprule $\beta$ & LR & 100 & 200 & 300 & 400 & 500 & val.\ margin (500) & pref.\ acc.\\\midrule
+0.1 & 1e-5 & \textbf{80.9} & 80.1 & 78.6 & 78.0 & 77.8 & 4.1 & 83.5\%\\
+0.1 & 3e-5 & 78.8 & 78.7 & 77.9 & 77.7 & 78.1 & 10.5 & 87.8\%\\
+0.1 & 1e-4 & 77.3 & 75.5 & 68.3 & 62.9 & 43.4 & 21.9 & 86.8\%\\
+0.5 & 1e-5 & 81.3 & 81.4 & 80.5 & 80.1 & 80.8 & 2.9 & 86.5\%\\
+0.5 & 3e-5 & 80.4 & 79.8 & 80.2 & 80.7 & \textbf{81.6} & 5.2 & 89.5\%\\
+0.5 & 1e-4 & 79.3 & 81.3 & 80.8 & 80.6 & 79.3 & 8.0 & 88.0\%\\
+\bottomrule\end{tabular}
+
+Bold: the configuration chosen for each $\beta$ (highest validation EM; ties go to fewer steps).
+

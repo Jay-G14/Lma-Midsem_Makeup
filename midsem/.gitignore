@@ -1,0 +1,15 @@
+# Local or regenerable
+drive_upload/
+.venv/
+__pycache__/
+*.zip
+report/*.aux
+report/*.log
+report/*.out
+# Course material (the brief): kept locally, not published
+LMA_MissedMidSem_Assgn.pdf
+# Kept on Google Drive instead (README, "Where everything is"), at these same paths under midsem/:
+# every checkpoint and adapter, and the training data
+*.pt
+project/hindi/data/processed/
+project/hindi/data/reasoning/train.jsonl

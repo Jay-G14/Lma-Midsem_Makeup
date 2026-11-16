@@ -1,0 +1,42 @@
+\raggedbottom
+\section*{Appendix}
+
+Commands to reproduce every number: \texttt{README.md} of the repository.
+
+\subsection*{Held-out wording used by the unseen-wording test set}
+{\small
+\begin{tabular}{ll}
+\toprule
+Training frame (Phase 3 generator) & Held-out frame (\texttt{UnseenWordingHindi}) \\
+\midrule
+\dn{A, B और C तीन दोस्त हैं।} & \dn{A, B और C के बारे में कुछ जानकारी दी गई है।}\\
+\dn{A की लंबाई B से अधिक है।} & \dn{A की लंबाई B की लंबाई से ज़्यादा है।}\\
+\dn{B की लंबाई A से कम है।} & \dn{B की लंबाई A के मुकाबले कम है।}\\
+\dn{B की तुलना में A की लंबाई अधिक है।} & \dn{A के मुकाबले B की लंबाई कम है।}\\
+\dn{A B से लंबा है। / B A से छोटा है।} & \dn{A कद में B से लंबा है।}, \dn{A उम्र में B से बड़ा है।}, \dn{A वज़न में B से भारी है।}, \dn{A B से तेज़ दौड़ता है।}\\
+\dn{A की लंबाई 150 सेमी है।} & \dn{A 150 सेमी लंबा है।}, \dn{A 25 वर्ष का है।}, \dn{A का भार 60 किग्रा है।}, \dn{A की कीमत 250 रुपये है।}\\
+\dn{इनमें से किसकी लंबाई सबसे अधिक है?} & \dn{बताइए, सबसे ज़्यादा लंबाई किसकी है?}\\
+\dn{क्या A की लंबाई B से अधिक है?} & \dn{क्या यह सही है कि A की लंबाई B से ज़्यादा है?}\\
+\dn{A और B में से किसकी लंबाई अधिक है?} & \dn{A या B, किसकी लंबाई ज़्यादा है?}\\
+\dn{क्या A और B की लंबाई बराबर है?} & \dn{क्या A की लंबाई और B की लंबाई समान है?}\\
+\bottomrule
+\end{tabular}}
+
+\subsection*{Part C prompts (verbatim user-turn suffixes; Qwen's default system prompt)}
+Direct: ``\dn{केवल अंतिम उत्तर एक संख्या के रूप में लिखिए। कोई व्याख्या या इकाई मत लिखिए।}''\\
+CoT and self-consistency: ``\dn{आइए चरण-दर-चरण सोचें। अपना हल लिखिए और अंत में 'उत्तर: <संख्या>' लिखिए।}''\\
+Judge (system): ``You are an impartial judge who checks solutions to math word problems.'' Judge (user): ``Below is a math word problem written in Hindi, followed by two candidate answers. Problem: \ldots\ Answer A: \ldots\ Answer B: \ldots\ Which answer is better, that is, more likely to reach the correct final result? Reply with only one letter: A or B.''
+
+\input{appendix_tables}
+
+\subsection*{Notes and limitations}
+\begin{itemize}[leftmargin=*,nosep]
+\item The Phase 3 project had a single (unseen-entity) test set. The seen-entity and unseen-wording sets were built for this assignment with the project generator, and the Phase 3 full-finetune checkpoint was re-scored on them, so every row of Table~\ref{tab:sweep} uses the same three sets.
+\item Two passes. The first, single-seed pass ran on the laptop (RTX 4050). The tables come from the Ada study (3 seeds, per-rank LR, DPO LR and step chosen on validation). Scoring the same checkpoint gives identical numbers on both GPUs (last row of the cross-check table), but \emph{training} the same configuration and seed gives different models: floating-point differences change the training trajectory. This is why single-run differences of a few points are not interpreted, and why the main tables report mean$\pm$sd over seeds.
+\item C2 pairs need exactly one correct reply, so ``short answer right'' pairs can only come from the problems where Qwen's direct answer is right (\CTwoShortRightProblems). The larger CoT pool (16 chains per problem) lets every one of them contribute.
+\item C1: S14's chain answers ``2:30'' (2 h 30 min) to a question asking for minutes. The strict checker marks it wrong; a lenient grader might accept it. No other score depends on such a judgement call.
+\item The modified problem M01 is the class's drifting-boat example (engine 15\,km/h in still water, current 3\,km/h, 8\,h drifting from A to B; how long back?) set on S01's boat (12\,km/h, current 3\,km/h, 6\,h): the answer is 2\,h, the template 10\,h.
+\end{itemize}
+
+\subsection*{Note}
+Claude Code was used to help with coding help in the assignment.

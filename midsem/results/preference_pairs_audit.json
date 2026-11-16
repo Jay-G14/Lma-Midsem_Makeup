@@ -1,0 +1,43 @@
+{
+  "train_pairs": 2000,
+  "val_pairs": 400,
+  "eligible_train_samples": 10870,
+  "task_mix": {
+    "numeric_pair": 400,
+    "transitive": 800,
+    "verbal_comparison": 400,
+    "numeric_extremum": 400
+  },
+  "question_types": {
+    "numeric_pair_yesno": 216,
+    "transitive_max": 286,
+    "numeric_pair_which": 184,
+    "verbal_yesno": 400,
+    "numeric_extremum_min": 197,
+    "transitive_min": 264,
+    "transitive_yesno": 250,
+    "numeric_extremum_max": 203
+  },
+  "chosen_answer_types": {
+    "yes/no": 866,
+    "entity": 1134
+  },
+  "names_in_train_pool_pct": 100.0,
+  "names_in_test_pool": 0,
+  "names_in_val_pool": 0,
+  "prompt_sentences_with_training_template_pct": 100.0,
+  "prompts_equal_to_a_test_question": 0,
+  "example": {
+    "id": "train-10944",
+    "split": "train",
+    "source_index": 10944,
+    "task": "numeric_pair",
+    "question_type": "numeric_pair_yesno",
+    "prompt": "प्रश्न: रज़ाई और झाड़ू दो वस्तुएँ हैं। झाड़ू का मूल्य 302 रुपये है। रज़ाई का मूल्य 884 रुपये है। क्या झाड़ू का मूल्य रज़ाई से अधिक है?\nतर्क:",
+    "chosen": " 302 = झाड़ू और 884 = रज़ाई है। 302 < 884 है, अतः झाड़ू < रज़ाई है। प्रश्न का दावा झाड़ू > रज़ाई है।\nउत्तर: नहीं",
+    "rejected": " 302 = झाड़ू और 884 = रज़ाई है। 302 > 884 है, अतः झाड़ू > रज़ाई है। प्रश्न का दावा झाड़ू > रज़ाई है।\nउत्तर: हाँ",
+    "chosen_answer": "नहीं",
+    "rejected_answer": "हाँ",
+    "rejected_error": "the two numbers compared the wrong way round"
+  }
+}

@@ -1,0 +1,93 @@
+% ===================== PART B =====================
+\section{Part B: Calculations and design}
+Every answer is worked out by hand below; \texttt{part\_b\_calculations.py} only re-checks the arithmetic (\texttt{results/part\_b.json}).
+
+\subsection*{B1. Near-duplicate detection ($b=10$ bands, $r=10$ rows, 100 MinHash values)}
+Within one band, all $r$ MinHash values of two documents agree with probability $s^r$, where $s$ is their Jaccard similarity. A band fails with probability $1-s^r$, and the pair becomes a candidate unless all $b$ bands fail:
+$P(s)=1-(1-s^{r})^{b}$.
+\begin{itemize}[leftmargin=*,nosep]
+\item $s=0.8$: $0.8^{10}=0.10737$; $1-0.10737=0.89263$; $0.89263^{10}=0.32114$; $P=1-0.32114=\mathbf{0.679}$.
+\item $s=0.3$: $0.3^{10}=5.905\times10^{-6}$; $(1-5.905\times10^{-6})^{10}=0.999941$; $P=\mathbf{5.90\times10^{-5}}$ ($\approx b\,s^r$).
+\item Threshold: $t\approx(1/b)^{1/r}=0.1^{0.1}=\mathbf{0.794}$ (there $P=1-0.9^{10}=0.65$). Solving $P=0.5$ exactly: $s=(1-0.5^{1/10})^{1/10}=0.763$. Further points, by the same three steps: $P(0.7)=1-(1-0.0282)^{10}=1-0.751=0.25$, $P(0.75)=1-(1-0.0563)^{10}=1-0.560=0.44$, $P(0.85)=1-(1-0.197)^{10}=1-0.112=0.89$, $P(0.9)=1-(1-0.349)^{10}=1-0.0137=0.986$.
+\end{itemize}
+\textbf{Would I use it for the Nepali corpus? Not as it is.} This setting is strict. False positives are almost impossible ($6\times10^{-5}$ at $s=0.3$), but a third of the pairs at $s=0.8$ and three quarters of those at $s=0.7$ are missed.
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Cost of keeping it:} the typical near-duplicate in a crawled news corpus is the same article reposted by several portals with different boilerplate, at $s\approx0.6$--$0.8$. Those copies stay in the corpus, so the model repeats them (memorisation, wasted steps). Copies can also straddle our document-level train/test split, and the token count of an already small corpus looks larger than it is.
+\item \emph{Cost of loosening it:} with the same 100 hashes, $b=20,r=5$ gives $t\approx(1/20)^{1/5}=0.55$, $P(0.8)=1-(1-0.8^5)^{20}=1-0.672^{20}=0.9996$ and $P(0.5)=1-0.969^{20}=0.47$, but also $P(0.3)=1-0.9976^{20}=0.047$. That means many more candidate pairs to check, and every false positive that is dropped deletes a distinct document from scarce data.
+\item \emph{What I would do:} use $b=20,r=5$ and drop only candidates whose \emph{exact} Jaccard (computed on the candidates) is $\ge0.7$. Verification makes false positives cost only compute, not data.
+\end{itemize}
+The project itself used exact SHA-256 deduplication only, so even $b=10,r=10$ would have removed more than it did.
+
+\subsection*{B2. Mixing two languages ($\alpha=0.5$)}
+Phase 1 training-split tokens: Hindi $n_H=611{,}672{,}304$, Nepali $n_L=450{,}106{,}294$ (total $1{,}061{,}778{,}598$).
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{By size:} $p_H=n_H/n=0.5761$, $p_L=0.4239$.
+\item \textbf{Temperature sampling:} $q_i=p_i^{\alpha}/\sum_j p_j^{\alpha}$. Here $\sqrt{0.5761}=0.7590$ and $\sqrt{0.4239}=0.6511$, with sum $1.4101$, so $q_H=\mathbf{0.538}$ and $q_L=\mathbf{0.462}$. Nepali is up-weighted by only $0.462/0.424=\times1.09$, because the corpora are close in size ($611.7/450.1=1.36$\,:\,1).
+\item \textbf{500M-token budget:} Nepali receives $0.4617\times500\text{M}=230.9$M tokens, i.e. $230.9/450.1=\mathbf{0.51}$ \textbf{epochs} of the Model L corpus. By size it would be $0.4239\times500\text{M}=212.0$M tokens, $212.0/450.1=0.47$ epochs. Hindi receives $0.5383\times500\text{M}=269.1$M tokens, $269.1/611.7=0.44$ epochs.
+\end{itemize}
+\textbf{Repetition.} 0.51 epochs means that no Nepali token is ever repeated. Muennighoff et al.\ (2023) find that up to about 4 epochs of repeated data is almost as good as fresh data, and that the value of repeats fades towards 16 or more epochs. The usual danger of up-sampling (overfitting the small language through many repeats) therefore never arises here. The binding constraint is the opposite: each language would see only about half of its own corpus.
+
+\textbf{Were separate models the better call? Yes, for this project:}
+\begin{itemize}[leftmargin=*,nosep]
+\item Each separate 25M model drew its 40k pretraining steps from its \emph{whole} corpus and kept all its capacity for one language. A joint 25M model would split that small capacity across two languages (the curse of multilinguality bites hardest at small scale) and, on a 500M budget, see only about half of each corpus.
+\item A shared 20k vocabulary would raise fertility for both languages.
+\item The Phase 3 failure of Model L came from Nepali postpositions fused onto names (\dn{श्यामको}). A joint tokenizer does not remove that fusion.
+\item Transfer from Hindi (same script, many shared words) is what a joint model would buy, and it pays off when the low-resource language is short of data. With 450M Nepali tokens and a budget that does not even cover one epoch, Nepali is not short of data.
+\end{itemize}
+
+\subsection*{B3. Compute-optimal allocation ($C=3\times10^{21}$ FLOPs)}
+With $C=6ND$ and $D=20N$: $C=120N^2$, so $N=\sqrt{C/120}=\sqrt{2.5\times10^{19}}=\mathbf{5.0\times10^{9}}$ parameters and $D=20N=\mathbf{1.0\times10^{11}}$ tokens. Check: $6\cdot5\times10^9\cdot10^{11}=3\times10^{21}$.
+
+\textbf{Colleague (4$\times$ larger):} $N'=2\times10^{10}$, so $D'=C/(6N')=2.5\times10^{10}$ tokens, i.e.\ only 1.25 tokens per parameter.
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{Parameter term improves:} $A/N^{\alpha}$ is multiplied by $4^{-\alpha}$.
+\item \textbf{Data term worsens:} $B/D^{\beta}$ is multiplied by $4^{\beta}$, because $D$ falls 4$\times$.
+\end{itemize}
+With the Chinchilla law as refitted by Besiroglu et al.\ (2024) ($L_\infty=1.82$, $A=482.0$, $\alpha=0.348$, $B=2085.4$, $\beta=0.366$; its optimum is 21 tokens/parameter, consistent with the 20:1 rule):
+\begin{itemize}[leftmargin=*,nosep]
+\item parameter term: $A/N^{\alpha}=482.0/(5\times10^9)^{0.348}=482.0/2362=0.204$; times $4^{-0.348}=0.62$ it becomes $0.126$;
+\item data term: $B/D^{\beta}=2085.4/(10^{11})^{0.366}=2085.4/10{,}563=0.197$; times $4^{0.366}=1.66$ it becomes $0.328$;
+\item total: $L=1.82+0.204+0.197=2.221$ becomes $1.82+0.126+0.328=2.274$ ($+0.052$ nats). The original Hoffmann et al.\ fit ($L_\infty=1.69$, $A=406.4$, $\alpha=0.34$, $B=410.7$, $\beta=0.28$) gives the same direction: $1.69+0.2048+0.3416=2.236\rightarrow1.69+0.1278+0.5036=2.321$.
+\end{itemize}
+\textbf{Why the colleague is probably wrong:} at fixed $C$, $D=C/6N$, so $L(N)=L_\infty+AN^{-\alpha}+B(6N/C)^{\beta}$ is convex in $\log N$. Its minimum is where the marginal gains balance, $\alpha A/N^{\alpha}=\beta B/D^{\beta}$, and at $N=5\times10^9$ these are $0.348\times0.204=0.071$ and $0.366\times0.197=0.072$. A 4$\times$ larger model gains less on the parameter term than it loses on the data term: it is badly under-trained at 1.25 tokens per parameter, and it also costs 4$\times$ more per token at inference.
+
+\subsection*{B4. LoRA and memory ($4096\times4096$, $r=4$; 8B model)}
+$\Delta W=BA$ with $B\in\mathbb{R}^{4096\times4}$ and $A\in\mathbb{R}^{4\times4096}$.
+\begin{itemize}[leftmargin=*,nosep]
+\item Trainable parameters: $r(d+k)=4\cdot8192=\mathbf{32{,}768}$.
+\item A full update has $dk=16{,}777{,}216$, so LoRA is $\mathbf{0.195\%}$ of it ($1/512$).
+\end{itemize}
+\textbf{Why $B$ starts at zero and $A$ does not.} $B=0$ makes $BA=0$, so the adapted model starts \emph{exactly} at the pretrained one (Part A1 verifies bit-identical logits). $A$ must be random because the gradient of $B$ is $\partial L/\partial B=\tfrac{\alpha}{r}\,g\,(Ax)^{\top}$, which is zero if $A=0$. If both started at zero, then $\partial L/\partial B=\tfrac{\alpha}{r}g(Ax)^{\top}=0$ and $\partial L/\partial A=\tfrac{\alpha}{r}B^{\top}g\,x^{\top}=0$. Both gradients vanish identically, $(A,B)=(0,0)$ is a fixed point of gradient descent (weight decay keeps it there), and the adapter never learns. Part A1 measures exactly this asymmetry at step 0: $\|\nabla_A\|=0$, while $\|\nabla_B\|>0$.
+
+\textbf{8B model, fp32 (4 bytes per parameter), before activations:}
+\begin{itemize}[leftmargin=*,nosep]
+\item Running it needs $8\times10^9\times4\,\text{B}=\mathbf{32}$ \textbf{GB} ($32\times10^9/2^{30}=29.8$ GiB).
+\item Full finetuning with Adam needs weights 4 + gradients 4 + first moment 4 + second moment 4 = 16 B/parameter, i.e.\ $8\times10^9\times16\,\text{B}=\mathbf{128}$ \textbf{GB} (119.2 GiB). Mixed precision with fp32 master weights (2+2+4+4+4) is also 16 B/parameter.
+\end{itemize}
+LoRA keeps the 32 GB of frozen weights but needs gradients and Adam state only for the adapters. That is why LoRA matters at this scale, whereas for our 26M model activations dominate (Part A2).
+
+\subsection*{B5. Loss masking (three user and three assistant turns)}
+\textbf{Tokens that carry loss:} every token of all three assistant turns, including each turn's end-of-turn token, so the model learns to stop and hand the turn back. That includes the middle turn asking for the order number.
+
+\textbf{Tokens that do not:} the system prompt, the user turns and the role headers. They are context the model conditions on, not text it should learn to produce; training on them would teach it to write the user's side, for example to invent an order number itself.
+
+The middle turn is exactly the behaviour we want: when information is missing, ask for it. If only the final assistant turn is scored, the model loses \textbf{asking clarifying questions}. It learns to answer only once the order number is already in context, and with the number missing it will tend to hallucinate an order status instead of asking. It also loses two thirds of the supervised assistant tokens.
+
+\subsection*{B6. Picking an alignment method}
+\textbf{(i) Warmer Hindi support replies, 5,000 human preference pairs: DPO.}
+\begin{itemize}[leftmargin=*,nosep]
+\item The data is already offline pairwise preferences about style. DPO fits the Bradley--Terry preference likelihood directly, with no separate reward model and no on-policy RL loop, which makes it cheap and stable at 5k pairs (PPO would first need a reward model trained on the same pairs).
+\item \emph{Reward:} the implicit $r(x,y)=\beta\log\frac{\pi_\theta(y\mid x)}{\pi_{\rm ref}(y\mid x)}$, fitted so that the human-preferred reply scores higher.
+\end{itemize}
+\textbf{(ii) Python functions that pass a given test file: GRPO.}
+\begin{itemize}[leftmargin=*,nosep]
+\item Correctness is verifiable by running the tests, so no preference data or learned reward model is needed.
+\item GRPO samples a group of $k$ candidate functions per prompt and uses group-normalised rewards as advantages, which avoids PPO's value network.
+\item \emph{Reward:} the fraction of the file's tests passed in a sandbox (0 on a syntax error or timeout).
+\end{itemize}
+\textbf{(iii) Marathi grade-school problems with one numeric answer: GRPO.}
+\begin{itemize}[leftmargin=*,nosep]
+\item A rule-based reward: 1 if the extracted final number equals the gold answer (a checker like C1's), else 0, optionally with a small format bonus.
+\item Group-relative advantages make this sparse binary reward usable without a critic, as in DeepSeekMath.
+\item The model must already solve some Marathi problems: a group whose $k$ samples all fail has zero advantage, so a weak base model needs SFT first.
+\end{itemize}

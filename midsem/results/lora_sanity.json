@@ -1,0 +1,57 @@
+{
+  "probe_batch_shape": [
+    24,
+    199
+  ],
+  "alpha": 16.0,
+  "ranks": {
+    "1": {
+      "wrapped_matrices": 24,
+      "trainable": 24576,
+      "total": 26293248,
+      "base_params": 26268672,
+      "trainable_share_pct": 0.0935,
+      "trainable_share_of_base_pct": 0.0936,
+      "step0_logits_bit_identical": true,
+      "step0_max_abs_logit_diff": 0.0,
+      "step0_loss_base": 5.099228,
+      "step0_loss_lora": 5.099228,
+      "step0_grad_norm_A": 0.0,
+      "step0_grad_norm_B": 1.31295907497406,
+      "after_one_step_max_abs_logit_diff": 1.0106382369995117,
+      "after_one_step_max_delta_W_norm": 0.2175099402666092
+    },
+    "4": {
+      "wrapped_matrices": 24,
+      "trainable": 98304,
+      "total": 26366976,
+      "base_params": 26268672,
+      "trainable_share_pct": 0.3728,
+      "trainable_share_of_base_pct": 0.3742,
+      "step0_logits_bit_identical": true,
+      "step0_max_abs_logit_diff": 0.0,
+      "step0_loss_base": 5.099228,
+      "step0_loss_lora": 5.099228,
+      "step0_grad_norm_A": 0.0,
+      "step0_grad_norm_B": 0.6255094408988953,
+      "after_one_step_max_abs_logit_diff": 0.7702150344848633,
+      "after_one_step_max_delta_W_norm": 0.10729915648698807
+    },
+    "16": {
+      "wrapped_matrices": 24,
+      "trainable": 393216,
+      "total": 26661888,
+      "base_params": 26268672,
+      "trainable_share_pct": 1.4748,
+      "trainable_share_of_base_pct": 1.4969,
+      "step0_logits_bit_identical": true,
+      "step0_max_abs_logit_diff": 0.0,
+      "step0_loss_base": 5.099228,
+      "step0_loss_lora": 5.099228,
+      "step0_grad_norm_A": 0.0,
+      "step0_grad_norm_B": 0.33932000398635864,
+      "after_one_step_max_abs_logit_diff": 0.8198080062866211,
+      "after_one_step_max_delta_W_norm": 0.053545549511909485
+    }
+  }
+}

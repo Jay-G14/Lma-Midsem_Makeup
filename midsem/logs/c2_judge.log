@@ -1,0 +1,93 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+30 pairs: Counter({'direct': 15, 'cot': 15}) | problems 15
+Loading weights:   0%|          | 0/254 [00:00<?, ?it/s]Loading weights:   0%|          | 1/254 [00:00<01:18,  3.23it/s]Loading weights:   9%|▊         | 22/254 [00:00<00:03, 67.44it/s]Loading weights:  18%|█▊        | 46/254 [00:00<00:01, 120.21it/s]Loading weights:  25%|██▌       | 64/254 [00:00<00:01, 135.33it/s]Loading weights:  36%|███▌      | 91/254 [00:00<00:00, 175.13it/s]Loading weights:  44%|████▍     | 112/254 [00:00<00:00, 177.60it/s]Loading weights:  53%|█████▎    | 135/254 [00:00<00:00, 187.62it/s]Loading weights:  61%|██████▏   | 156/254 [00:01<00:00, 191.08it/s]Loading weights:  71%|███████▏  | 181/254 [00:01<00:00, 205.06it/s]Loading weights:  80%|███████▉  | 203/254 [00:01<00:00, 208.60it/s]Loading weights:  90%|█████████ | 229/254 [00:01<00:00, 218.89it/s]Loading weights: 100%|██████████| 254/254 [00:01<00:00, 174.35it/s]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+P01 M02 checker: direct | direct-first -> cot 0.28638 | cot-first -> cot 0.860928
+P02 M02 checker: direct | direct-first -> cot 0.380413 | cot-first -> cot 0.850475
+P03 M02 checker: direct | direct-first -> direct 0.562595 | cot-first -> direct 0.493499
+P04 M05 checker: cot | direct-first -> cot 0.430397 | cot-first -> cot 0.77427
+P05 S01 checker: direct | direct-first -> direct 0.933049 | cot-first -> cot 0.828622
+P06 S01 checker: direct | direct-first -> direct 0.774491 | cot-first -> cot 0.70033
+P07 S01 checker: direct | direct-first -> direct 0.78491 | cot-first -> cot 0.812552
+P08 S02 checker: cot | direct-first -> cot 0.264869 | cot-first -> cot 0.549818
+P09 S02 checker: cot | direct-first -> cot 0.468194 | cot-first -> direct 0.407627
+P10 S03 checker: direct | direct-first -> direct 0.568987 | cot-first -> cot 0.703621
+P11 S04 checker: cot | direct-first -> cot 0.138912 | cot-first -> cot 0.96804
+P12 S04 checker: cot | direct-first -> direct 0.648951 | cot-first -> cot 0.953073
+P13 S05 checker: direct | direct-first -> direct 0.551229 | cot-first -> cot 0.807912
+P14 S05 checker: direct | direct-first -> cot 0.131029 | cot-first -> cot 0.686557
+P15 S05 checker: direct | direct-first -> cot 0.337082 | cot-first -> cot 0.885932
+P16 S06 checker: direct | direct-first -> cot 0.452259 | cot-first -> cot 0.709961
+P17 S06 checker: direct | direct-first -> direct 0.728359 | cot-first -> cot 0.887306
+P18 S06 checker: direct | direct-first -> direct 0.623935 | cot-first -> cot 0.583113
+P19 S07 checker: direct | direct-first -> direct 0.548201 | cot-first -> cot 0.65177
+P20 S07 checker: direct | direct-first -> direct 0.700271 | cot-first -> cot 0.69332
+P21 S08 checker: cot | direct-first -> direct 0.610972 | cot-first -> cot 0.892133
+P22 S08 checker: cot | direct-first -> direct 0.921346 | cot-first -> cot 0.944475
+P23 S09 checker: cot | direct-first -> direct 0.796012 | cot-first -> cot 0.849447
+P24 S09 checker: cot | direct-first -> direct 0.86721 | cot-first -> cot 0.865576
+P25 S10 checker: cot | direct-first -> direct 0.609055 | cot-first -> cot 0.744613
+P26 S10 checker: cot | direct-first -> cot 0.351172 | cot-first -> cot 0.604536
+P27 S12 checker: cot | direct-first -> direct 0.537296 | cot-first -> cot 0.911893
+P28 S12 checker: cot | direct-first -> direct 0.703585 | cot-first -> cot 0.882681
+P29 S13 checker: cot | direct-first -> direct 0.960794 | cot-first -> cot 0.775655
+P30 S15 checker: cot | direct-first -> direct 0.861305 | cot-first -> cot 0.924872
+{
+ "judge": "unsloth/Llama-3.2-3B-Instruct-bnb-4bit",
+ "dtype": "bfloat16",
+ "device_map": "cuda",
+ "pairs": 30,
+ "verdicts": 60,
+ "pair_mix": {
+  "direct": 15,
+  "cot": 15
+ },
+ "problems_covered": 15,
+ "pairs_per_problem": {
+  "M02": 3,
+  "M05": 1,
+  "S01": 3,
+  "S02": 2,
+  "S03": 1,
+  "S04": 2,
+  "S05": 3,
+  "S06": 3,
+  "S07": 2,
+  "S08": 2,
+  "S09": 2,
+  "S10": 2,
+  "S12": 2,
+  "S13": 1,
+  "S15": 1
+ },
+ "position_bias_rate": 0.6667,
+ "order_consistent_pairs": 10,
+ "first_position_win_rate": 0.8,
+ "agreement_with_checker_consistent": 0.5,
+ "cohen_kappa_consistent": 0.1379,
+ "agreement_with_checker_all_verdicts": 0.5,
+ "longer_answer_win_rate": 0.6333,
+ "cot_preferred_rate": 0.6333,
+ "top_token_is_A_or_B": 55,
+ "consistent_preferences": {
+  "cot": 9,
+  "direct": 1
+ },
+ "order_averaged": {
+  "agreement_with_checker": 0.5667,
+  "cohen_kappa": 0.1333,
+  "prefers_cot": 22
+ },
+ "by_checker_winner": {
+  "direct": {
+   "pairs": 15,
+   "consistent": 6,
+   "judge_correct_verdicts": 11
+  },
+  "cot": {
+   "pairs": 15,
+   "consistent": 4,
+   "judge_correct_verdicts": 19
+  }
+ }
+}

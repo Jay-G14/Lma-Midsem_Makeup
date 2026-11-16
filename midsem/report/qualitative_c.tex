@@ -1,0 +1,22 @@
+\begin{figure}[H]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{3.3cm}p{13.25cm}c@{}}
+\toprule
+\multicolumn{3}{@{}p{17.1cm}@{}}{\textbf{(a) C1, problem M01 (modified: the boat drifts).} \dn{एक नाव का इंजन उसे शांत जल में 12 किमी/घंटा की चाल से चला सकता है। धारा की चाल 3 किमी/घंटा है। नाव 6 घंटे तक धारा के साथ बहते हुए स्थान A से स्थान B तक जाती है। स्थान B से स्थान A तक वापस आने में नाव को कितने घंटे लगेंगे?} \hfill gold: 2, familiar template: 10}\\
+\midrule
+Direct (greedy) & \dn{12} \quad (neither the answer nor the template) & $\times$\\
+Zero-shot CoT (greedy) & \dn{हल: 1. नाव की चाल: 12 किमी/घंटा 2. धारा की चाल: 3 किमी/घंटा 3. नाव जल में चलने की दर: 12 - 3 = 9 किमी/घंटा 4. नाव जल}\,\ldots\,\dn{दर: 9 किमी/घंटा नाव जल में चलने की दर: 6 घंटे उत्तर: 6 घंटे} \quad (answer 6: neither the answer nor the template) & $\times$\\
+SC (seed 1234) & votes of the 5 chains: 6, 6, 3/2 (= 1.5), 5/2 (= 2.5), 9/2 (= 4.5); plurality vote 6 & $\times$\\
+\midrule
+\multicolumn{3}{@{}p{17.1cm}@{}}{\textbf{(b) C2, pair P19 (problem S07; the short answer is right).} \dn{एक कक्षा में 40 विद्यार्थी हैं। उनमें से 25\% विद्यार्थी चश्मा पहनते हैं। कितने विद्यार्थी चश्मा पहनते हैं?} \hfill gold: 10}\\
+\midrule
+Answer 1: direct & \dn{10} & \checkmark\\
+Answer 2: CoT & (SC seed 2234, sample 1) \dn{चरण-दर-चरण अभी भी आपकी पूछे गए हैं और मैं अंत में उत्तर देने की सुंदरता के लिए आपको इस अंतर्निहित पूछा जाएगा। आपको निचे}\,\ldots\,\dn{उत्तर: <संख्या>}\,\ldots\ (no number is ever computed; the checker reads the list number 3) & $\times$\\
+Judge, 4-bit NF4 & direct shown first (as A): P(A) = 0.55, picks the direct answer; CoT shown first (as A): P(A) = 0.65, picks the CoT answer & --\\
+Judge, fp32 & direct shown first (as A): P(A) = 0.12, picks the CoT answer; CoT shown first (as A): P(A) = 0.73, picks the CoT answer & --\\
+\bottomrule
+\end{tabular}
+\caption{C1/C2: two examples in full. (a) The drifting boat defeats every condition, and no reply treats `drifting' as moving at the current's 3\,km/h: direct gives the engine's own speed (12), the greedy chain finds the upstream speed 9 and then repeats `\dn{दर: 6 घंटे}' (a speed in hours) until it answers 6, and the five sampled chains disagree, so the plurality vote (6, from two chains) is wrong too. (b) A pair the judge gets wrong: the long reply never computes a number, yet the 4-bit judge picks whichever answer it reads first and the fp32 judge picks the long reply in both orders.}
+\label{fig:qualC}
+\end{figure}

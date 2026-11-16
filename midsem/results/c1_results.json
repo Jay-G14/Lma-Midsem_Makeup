@@ -1,0 +1,88 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "seconds": 953.1,
+  "settings": {
+    "batching": "one prompt per generate call (no padding)",
+    "direct": "greedy, max 48 new tokens",
+    "cot": "greedy, max 1024 new tokens",
+    "sc": "5 samples, T=0.7, top-p 0.95, top-k off, majority vote, max 1024 new tokens",
+    "sc_seeds": [
+      1234,
+      2234,
+      3234
+    ],
+    "repetition_penalty": 1.0,
+    "dtype": "bfloat16",
+    "direct_suffix": "\n\nकेवल अंतिम उत्तर एक संख्या के रूप में लिखिए। कोई व्याख्या या इकाई मत लिखिए।",
+    "cot_suffix": "\n\nआइए चरण-दर-चरण सोचें। अपना हल लिखिए और अंत में 'उत्तर: <संख्या>' लिखिए।"
+  },
+  "results": {
+    "direct": {
+      "standard_correct": 5,
+      "standard_n": 15,
+      "standard_accuracy": 33.3,
+      "modified_correct": 1,
+      "modified_n": 5,
+      "modified_accuracy": 20.0,
+      "overall_accuracy": 30.0,
+      "mean_generated_tokens": 4.7,
+      "modified_template_answer_rate": 20.0,
+      "truncated_replies": 0
+    },
+    "cot": {
+      "standard_correct": 6,
+      "standard_n": 15,
+      "standard_accuracy": 40.0,
+      "modified_correct": 1,
+      "modified_n": 5,
+      "modified_accuracy": 20.0,
+      "overall_accuracy": 35.0,
+      "mean_generated_tokens": 446.9,
+      "modified_template_answer_rate": 20.0,
+      "truncated_replies": 4
+    },
+    "sc": {
+      "standard_correct": 10,
+      "standard_n": 15,
+      "standard_accuracy": 66.7,
+      "modified_correct": 0,
+      "modified_n": 5,
+      "modified_accuracy": 0.0,
+      "overall_accuracy": 50.0,
+      "mean_generated_tokens": 1881.8,
+      "mean_generated_tokens_per_sample": 376.4,
+      "modified_template_answer_rate": 40.0,
+      "truncated_replies": 5
+    },
+    "cot_devanagari_share": 0.985,
+    "sc_seeds": {
+      "per_seed": {
+        "1234": {
+          "standard_accuracy": 66.7,
+          "modified_accuracy": 0.0,
+          "overall_accuracy": 50.0,
+          "mean_generated_tokens": 1881.8
+        },
+        "2234": {
+          "standard_accuracy": 73.3,
+          "modified_accuracy": 0.0,
+          "overall_accuracy": 55.0,
+          "mean_generated_tokens": 1749.9
+        },
+        "3234": {
+          "standard_accuracy": 66.7,
+          "modified_accuracy": 0.0,
+          "overall_accuracy": 50.0,
+          "mean_generated_tokens": 1878.2
+        }
+      },
+      "standard_accuracy_mean": 68.9,
+      "modified_accuracy_mean": 0.0,
+      "overall_accuracy_mean": 51.7,
+      "mean_generated_tokens_mean": 1836.6,
+      "standard_accuracy_sd": 3.8,
+      "modified_accuracy_sd": 0.0,
+      "overall_accuracy_sd": 2.9
+    }
+  }
+}

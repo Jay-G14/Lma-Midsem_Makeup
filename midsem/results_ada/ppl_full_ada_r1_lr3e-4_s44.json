@@ -1,0 +1,11 @@
+{
+  "loss": 3.9626,
+  "perplexity": 52.59,
+  "bits_per_byte": 5.7168,
+  "eval_tokens": 23808000,
+  "model": "ada_r1_lr3e-4_s44",
+  "description": "LoRA r=1 lr=0.0003 seed=44 (ada_r1_lr3e-4_s44)",
+  "chunks": 46500,
+  "seconds": 165.9,
+  "method": "Phase 2 PretrainDataset packing: <s> doc </s> concatenated, 513-token chunks"
+}

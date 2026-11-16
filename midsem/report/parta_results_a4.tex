@@ -1,0 +1,49 @@
+\textbf{What the sweep shows} (Figure~\ref{fig:dposweep}; full grid in the appendix).
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{$\beta=0.1$: more DPO only hurts.}
+\begin{itemize}[leftmargin=*,nosep]
+\item LR $10^{-5}$ peaks at step 100 (80.9\% validation EM vs.\ 80.2\% for the reference, within noise) and then declines.
+\item LR $3\cdot10^{-5}$ stays below the reference throughout.
+\item LR $10^{-4}$, the original fixed protocol, collapses from 77.3\% to 43.4\% by step 500.
+\end{itemize}
+\item \textbf{$\beta=0.5$ is stable.} Every LR and step stays within about 1.5 points of the reference (79.3--81.6\%), and nothing collapses. The chosen configuration (LR $3\cdot10^{-5}$, 500 steps) gains 1.4 points on validation, inside the $\pm$2.5-point noise of 1,000 questions.
+\end{itemize}
+
+\textbf{Why} (Figures~\ref{fig:dpo} and~\ref{fig:logratios}).
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{$\beta$ limits how far the policy can move.} $-\log\sigma(\beta m)$ saturates once $\beta m\approx3$--4. At LR $10^{-4}$, $\beta=0.5$'s validation margin therefore levels off near 8 nats, while $\beta=0.1$ keeps pushing to about 22.
+\item \emph{How the margin is made differs.}
+\begin{itemize}[leftmargin=*,nosep]
+\item $\beta=0.5$ keeps the chosen log-ratio near 0 and lowers the rejected one.
+\item $\beta=0.1$ lowers the rejected reply by about 34 nats, but also the \emph{chosen} one by about 13 (likelihood displacement): the gold chain itself becomes $e^{13}$ times less likely.
+\item The rejected replies share the chain-closing tokens (``\dn{है। अतः …}'') with the gold ones, so pushing them down also pushes down the exits. The collapsed model loops ``\dn{ममता > ममता > …}'' and writes ``\dn{उत्तर:}'' for only \AdaFixLowAnsUnEnt\% of the questions.
+\end{itemize}
+\item \emph{Little preference is left to learn.} At step 0 the reference already gives the chosen reply 9.7 nats more than the rejected one. The pairs are training questions the SFT model has learned, and each rejected reply makes a single synthetic error, not the multi-step errors the model actually makes at test time.
+\end{itemize}
+
+\textbf{Test accuracy after DPO} (Table~\ref{tab:dpo}; reference: \AdaAccBestSeen\ / \AdaAccBestUnEnt\ / \AdaAccBestUnWord\% on seen entities / unseen entities / unseen wording).
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{$\beta=0.1$ (chosen) changes nothing measurable:} \AdaDpoLowSeen\ / \AdaDpoLowUnEnt\ / \AdaDpoLowUnWord. Its best validation point was after only 100 small steps.
+\item \textbf{$\beta=0.5$ (chosen) trades robustness for fit:}
+\begin{itemize}[leftmargin=*,nosep]
+\item it is slightly better on seen entities (\AdaDpoHighSeen) and unchanged on unseen entities (\AdaDpoHighUnEnt);
+\item but it loses about 7 points on unseen wording (\AdaDpoHighUnWord), consistently over 3 seeds;
+\item all 2,000 pairs use training templates, so DPO sharpens exactly those templates.
+\end{itemize}
+\item \textbf{Over-optimisation is costly.} The fixed protocol collapses for $\beta=0.1$ (\AdaFixLowUnEnt\% on unseen entities) but not for $\beta=0.5$ (\AdaFixHighUnEnt\%).
+\end{itemize}
+
+\subsection*{A5. Drift}
+Pretraining-validation PPL on 500 documents / on the whole validation split (Tables~\ref{tab:sweep}, \ref{tab:dpo}):
+\begin{itemize}[leftmargin=*,nosep]
+\item base \PplBase\ / \AdaPplFullBase;
+\item full FT \AdaPplFull\ / \AdaPplFullFull;
+\item best LoRA \AdaPplBest\ / \AdaPplFullBest;
+\item DPO $\beta=0.1$ \AdaDpoLowPpl\ / \AdaDpoLowPplFull, and $\beta=0.5$ \AdaDpoHighPpl\ / \AdaDpoHighPplFull\ (fixed protocol: \AdaFixLowPpl\ / \AdaFixLowPplFull\ and \AdaFixHighPpl\ / \AdaFixHighPplFull).
+\end{itemize}
+\textbf{What moved, and why.}
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{Reasoning finetuning moves prose perplexity; LoRA moves it less.} Every finetune pulls the model towards the chain format. LoRA's update is low-rank and confined to attention, with FFNs, embeddings and norms frozen, so it forgets less than full finetuning on both measures (``LoRA learns less and forgets less'', Biderman et al., 2024). The 15\% replay limits both.
+\item \textbf{DPO barely moves it.} Its gradient touches only reasoning replies, and within them only the tokens after the decisive step, since the shared prefix cancels. The more the policy moves (smaller $\beta$, higher LR, more steps), the more it drifts.
+\item \textbf{Perplexity hides the drift that matters.} The collapsed fixed-protocol $\beta=0.1$ model loses 34 points of unseen-entity accuracy (\AdaAccBestUnEnt\ to \AdaFixLowUnEnt) for under one point of prose PPL (\AdaPplBest\ to \AdaFixLowPpl). Drift must also be measured on the task's own outputs.
+\end{itemize}

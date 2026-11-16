@@ -1,0 +1,71 @@
+\documentclass[10pt,a4paper,twocolumn]{article}
+\usepackage{fontspec}
+\usepackage[margin=0.62in,columnsep=0.25in]{geometry}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+
+\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold, ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\newfontfamily\devanagarifont[Path=./fonts/, Scale=0.92, Script=Devanagari]{NotoSansDevanagari-Regular.ttf}
+\newcommand{\dn}[1]{{\devanagarifont #1}}
+\input{numbers}
+% GitHub repository of midsem/ (placeholder until the link is known)
+\newcommand{\repourl}{\url{https://github.com/Jay-G14/Lma-Midsem_Makeup}}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+\titlespacing*{\subsection}{0pt}{5pt}{2pt}
+\renewcommand{\thesection}{}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyhead[L]{\footnotesize\itshape CL3410 Make-up Mid-Semester Assignment --- variant 1}
+\fancyhead[R]{\footnotesize\itshape Jayant Gupta (2023113001)}
+\fancyfoot[C]{\footnotesize\thepage}
+\captionsetup{font=footnotesize,labelfont=bf,margin=2pt,skip=3pt}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.05}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.9}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+\thispagestyle{plain}
+\twocolumn[{%
+\noindent\textbf{Variant 1} \quad (roll number 2023113001: last digit $1$, $1 \bmod 5 = 1$)\\[2pt]
+{\Large\bfseries CL3410 Language Models and Agents --- Make-up Mid-Semester Assignment}\\[2pt]
+Jayant Gupta, 2023113001 \hfill Monsoon 2026\\[1pt]
+{\small Variant 1 values. Part A: Model H (Hindi), LoRA on $W_Q,W_K,W_V,W_O$ in every block, DPO $\beta=0.5$ (and $0.1$).
+Part B: LSH $b=10,r=10$; $C=3\times10^{21}$; LoRA $4096\times4096$, $r=4$; 8B model; $\alpha=0.5$.
+Code, data and every result: \repourl\ (\texttt{run\_part\_a.sh}, \texttt{part\_b\_calculations.py}, \texttt{run\_part\_c.sh}; every number below is in \texttt{results/}); large files: Google Drive, linked from its README.}
+\vspace{4pt}\hrule\vspace{6pt}
+}]
+
+\input{parta}
+\input{partb}
+\input{partc}
+
+\clearpage
+\onecolumn
+\raggedbottom
+\section*{Figures (not counted in the page limit)}
+\input{figures}
+
+\clearpage
+\appendix
+\input{appendix}
+\end{document}

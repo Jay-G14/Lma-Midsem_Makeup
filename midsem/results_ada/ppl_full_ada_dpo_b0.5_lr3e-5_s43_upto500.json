@@ -1,0 +1,11 @@
+{
+  "loss": 3.9851,
+  "perplexity": 53.79,
+  "bits_per_byte": 5.7492,
+  "eval_tokens": 23808000,
+  "model": "ada_dpo_b0.5_lr3e-5_s43_upto500",
+  "description": "DPO beta=0.5 r=16 lr=3e-05 seed=43 (ada_dpo_b0.5_lr3e-5_s43_upto500)",
+  "chunks": 46500,
+  "seconds": 167.5,
+  "method": "Phase 2 PretrainDataset packing: <s> doc </s> concatenated, 513-token chunks"
+}

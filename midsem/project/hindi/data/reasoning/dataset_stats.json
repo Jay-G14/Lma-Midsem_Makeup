@@ -1,0 +1,69 @@
+{
+  "entity_pools": {
+    "train": {
+      "people": 208,
+      "objects": 61
+    },
+    "val": {
+      "people": 44,
+      "objects": 13
+    },
+    "test": {
+      "people": 45,
+      "objects": 13
+    }
+  },
+  "task_weights": {
+    "transitive": 0.4,
+    "numeric_extremum": 0.2,
+    "numeric_pair": 0.2,
+    "verbal_comparison": 0.2
+  },
+  "splits": {
+    "train": {
+      "size": 12000,
+      "tasks": {
+        "transitive": 4874,
+        "verbal_comparison": 2384,
+        "numeric_pair": 2402,
+        "numeric_extremum": 2340
+      },
+      "answer_types": {
+        "entity": 6211,
+        "no": 2891,
+        "yes": 2557,
+        "equal": 341
+      }
+    },
+    "val": {
+      "size": 1000,
+      "tasks": {
+        "transitive": 398,
+        "verbal_comparison": 211,
+        "numeric_extremum": 189,
+        "numeric_pair": 202
+      },
+      "answer_types": {
+        "entity": 512,
+        "yes": 222,
+        "no": 242,
+        "equal": 24
+      }
+    },
+    "test": {
+      "size": 1000,
+      "tasks": {
+        "transitive": 402,
+        "numeric_pair": 196,
+        "verbal_comparison": 216,
+        "numeric_extremum": 186
+      },
+      "answer_types": {
+        "entity": 516,
+        "no": 246,
+        "equal": 23,
+        "yes": 215
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "hparams": {
+    "model_path": "hindi/checkpoints/final_model.pt",
+    "tokenizer_path": "hindi/tokenizer/tokenizer.json",
+    "train_data": "hindi/data/reasoning/train.jsonl",
+    "val_data": "hindi/data/reasoning/val.jsonl",
+    "pretrain_train_data": "hindi/data/processed/train.jsonl",
+    "pretrain_val_data": "hindi/data/processed/val.jsonl",
+    "replay_ratio": 0.15,
+    "output_dir": "hindi/checkpoints",
+    "epochs": 5,
+    "batch_size": 8,
+    "learning_rate": 2e-05,
+    "answer_only": false,
+    "optimizer": "AdamW",
+    "weight_decay": 0.01,
+    "grad_clip": 1.0,
+    "lr_schedule": "constant"
+  },
+  "best_epoch": 5,
+  "epochs": [
+    {
+      "epoch": 0,
+      "train_loss": null,
+      "val_reasoning_loss": 6.3951,
+      "pretrain_ppl": 57.95
+    },
+    {
+      "epoch": 1,
+      "train_loss": 1.9011,
+      "val_reasoning_loss": 0.1994,
+      "pretrain_ppl": 59.36
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.5551,
+      "val_reasoning_loss": 0.1057,
+      "pretrain_ppl": 60.05
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.4703,
+      "val_reasoning_loss": 0.0775,
+      "pretrain_ppl": 60.95
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.4142,
+      "val_reasoning_loss": 0.069,
+      "pretrain_ppl": 61.84
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.3556,
+      "val_reasoning_loss": 0.0665,
+      "pretrain_ppl": 63.5
+    }
+  ]
+}

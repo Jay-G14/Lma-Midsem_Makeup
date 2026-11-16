@@ -1,0 +1,5 @@
+{
+  "model": "base",
+  "description": "Phase 2 pretrained checkpoint",
+  "pretrain_val_ppl_500docs": 57.95
+}

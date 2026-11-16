@@ -1,0 +1,22 @@
+[beta=0.5] step 0 loss 0.693147 (log 2 = 0.693147); full-train-set loss 0.693147; max |margin| 0.00e+00
+  step   25 | train loss 0.6512 margin    0.18 | val loss 0.6404 margin    0.23 acc 0.790
+  step   50 | train loss 0.6599 margin    0.15 | val loss 0.6008 margin    0.45 acc 0.790
+  step   75 | train loss 0.5525 margin    0.70 | val loss 0.5638 margin    0.67 acc 0.810
+  step  100 | train loss 0.5365 margin    0.88 | val loss 0.5348 margin    0.87 acc 0.782
+  step  125 | train loss 0.5511 margin    0.64 | val loss 0.5103 margin    1.06 acc 0.792
+  step  150 | train loss 0.3466 margin    2.09 | val loss 0.4877 margin    1.25 acc 0.795
+  step  175 | train loss 0.5148 margin    1.06 | val loss 0.4691 margin    1.40 acc 0.812
+  step  200 | train loss 0.5699 margin    0.72 | val loss 0.4520 margin    1.54 acc 0.830
+  step  225 | train loss 0.4495 margin    1.35 | val loss 0.4330 margin    1.70 acc 0.843
+  step  250 | train loss 0.4333 margin    1.39 | val loss 0.4179 margin    1.85 acc 0.853
+  step  275 | train loss 0.2923 margin    2.92 | val loss 0.4052 margin    2.00 acc 0.848
+  step  300 | train loss 0.4153 margin    2.08 | val loss 0.3951 margin    2.12 acc 0.858
+  step  325 | train loss 0.3258 margin    2.53 | val loss 0.3856 margin    2.26 acc 0.850
+  step  350 | train loss 0.4465 margin    1.80 | val loss 0.3768 margin    2.38 acc 0.858
+  step  375 | train loss 0.4041 margin    1.92 | val loss 0.3684 margin    2.47 acc 0.858
+  step  400 | train loss 0.5731 margin    0.67 | val loss 0.3638 margin    2.55 acc 0.853
+  step  425 | train loss 0.3601 margin    2.39 | val loss 0.3559 margin    2.67 acc 0.860
+  step  450 | train loss 0.2639 margin    3.03 | val loss 0.3489 margin    2.77 acc 0.860
+  step  475 | train loss 0.5880 margin    0.73 | val loss 0.3432 margin    2.86 acc 0.860
+  step  500 | train loss 0.2536 margin    3.01 | val loss 0.3396 margin    2.94 acc 0.865
+Saved /home2/jayant.g/lma-midsem/hindi/checkpoints/midsem/ada_dpo_b0.5_lr1e-5_s42/adapter.pt; final val {'step': 500, 'loss': 0.339601526260376, 'margin': 2.944262676239014, 'chosen_logratio': -0.25420670747756957, 'rejected_logratio': -3.198469362258911, 'preference_accuracy': 0.865}

@@ -1,0 +1,98 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 3751.16it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[transformers] Passing `generation_config` together with generation-related arguments=({'num_return_sequences'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.
+  direct done (3s)
+  greedy CoT done (180s)
+  SC seed 1234 done (443s)
+  SC seed 2234 done (689s)
+  SC seed 3234 done (953s)
+{
+ "direct": {
+  "standard_correct": 5,
+  "standard_n": 15,
+  "standard_accuracy": 33.3,
+  "modified_correct": 1,
+  "modified_n": 5,
+  "modified_accuracy": 20.0,
+  "overall_accuracy": 30.0,
+  "mean_generated_tokens": 4.7,
+  "modified_template_answer_rate": 20.0,
+  "truncated_replies": 0
+ },
+ "cot": {
+  "standard_correct": 6,
+  "standard_n": 15,
+  "standard_accuracy": 40.0,
+  "modified_correct": 1,
+  "modified_n": 5,
+  "modified_accuracy": 20.0,
+  "overall_accuracy": 35.0,
+  "mean_generated_tokens": 446.9,
+  "modified_template_answer_rate": 20.0,
+  "truncated_replies": 4
+ },
+ "sc": {
+  "standard_correct": 10,
+  "standard_n": 15,
+  "standard_accuracy": 66.7,
+  "modified_correct": 0,
+  "modified_n": 5,
+  "modified_accuracy": 0.0,
+  "overall_accuracy": 50.0,
+  "mean_generated_tokens": 1881.8,
+  "mean_generated_tokens_per_sample": 376.4,
+  "modified_template_answer_rate": 40.0,
+  "truncated_replies": 5
+ },
+ "cot_devanagari_share": 0.985,
+ "sc_seeds": {
+  "per_seed": {
+   "1234": {
+    "standard_accuracy": 66.7,
+    "modified_accuracy": 0.0,
+    "overall_accuracy": 50.0,
+    "mean_generated_tokens": 1881.8
+   },
+   "2234": {
+    "standard_accuracy": 73.3,
+    "modified_accuracy": 0.0,
+    "overall_accuracy": 55.0,
+    "mean_generated_tokens": 1749.9
+   },
+   "3234": {
+    "standard_accuracy": 66.7,
+    "modified_accuracy": 0.0,
+    "overall_accuracy": 50.0,
+    "mean_generated_tokens": 1878.2
+   }
+  },
+  "standard_accuracy_mean": 68.9,
+  "modified_accuracy_mean": 0.0,
+  "overall_accuracy_mean": 51.7,
+  "mean_generated_tokens_mean": 1836.6,
+  "standard_accuracy_sd": 3.8,
+  "modified_accuracy_sd": 0.0,
+  "overall_accuracy_sd": 2.9
+ }
+}
+S01 12 | direct 12 | cot 3 | sc [None, '0', '65/8 (= 8.125)', '40', '6'] -> 0 | other seeds {'2234': '24', '3234': '6'}
+S02 2.4 | direct 10 | cot 12/5 (= 2.4) | sc ['12/5 (= 2.4)', '12/5 (= 2.4)', '10', '12/5 (= 2.4)', '5/12 (= 0.416667)'] -> 12/5 (= 2.4) | other seeds {'2234': '12/5 (= 2.4)', '3234': '6'}
+S03 8 | direct 8 | cot 8 | sc ['8', '8', '8', '8', '8'] -> 8 | other seeds {'2234': '8', '3234': '8'}
+S04 5 | direct 20 | cot 5 | sc ['5', '5', '5', '5', '5'] -> 5 | other seeds {'2234': '5', '3234': '5'}
+S05 5 | direct 5 | cot 10 | sc ['20', '12', '18', '6', '560'] -> 20 | other seeds {'2234': '2', '3234': '120'}
+S06 0.05 | direct 1/20 (= 0.05) | cot 1/20 (= 0.05) | sc ['1/20 (= 0.05)', '1/20 (= 0.05)', '1/20 (= 0.05)', '1/20 (= 0.05)', '1/20 (= 0.05)'] -> 1/20 (= 0.05) | other seeds {'2234': '1/20 (= 0.05)', '3234': '1/20 (= 0.05)'}
+S07 10 | direct 10 | cot 10 | sc ['10', '10', '10', '10', '10'] -> 10 | other seeds {'2234': '10', '3234': '10'}
+S08 60 | direct 90 | cot 30 | sc ['60', '60', '60', '60', None] -> 60 | other seeds {'2234': '60', '3234': '60'}
+S09 1200 | direct 240 | cot 101/1250 (= 0.0808) | sc ['14400', '16200', '1', '1200', '1620'] -> 14400 | other seeds {'2234': '1200', '3234': '1200'}
+S10 18 | direct 15 | cot 1720 | sc ['117/5 (= 23.4)', '27/2 (= 13.5)', '150', '18', '18'] -> 18 | other seeds {'2234': '18', '3234': '18'}
+S11 0.75 | direct 1/4 (= 0.25) | cot 3/5 (= 0.6) | sc ['2', '6', '1/4 (= 0.25)', '4', '1/2 (= 0.5)'] -> 2 | other seeds {'2234': '6', '3234': '6'}
+S12 300 | direct 600 | cot 300 | sc ['300', '300', '25', '300', '300'] -> 300 | other seeds {'2234': '300', '3234': '300'}
+S13 360 | direct 1800 | cot 720 | sc ['360', '300', '360', '1800', '360'] -> 360 | other seeds {'2234': '360', '3234': '360'}
+S14 150 | direct 360 | cot 2 | sc ['2', '12', '5', '115', '30'] -> 2 | other seeds {'2234': '730', '3234': '2'}
+S15 900 | direct 750 | cot 500 | sc ['3600', '900', '900', '900', '1125/2 (= 562.5)'] -> 900 | other seeds {'2234': '900', '3234': '900'}
+M01 2 | direct 12 | cot 6 | sc ['6', '6', '3/2 (= 1.5)', '5/2 (= 2.5)', '9/2 (= 4.5)'] -> 6 | other seeds {'2234': '6', '3234': '6'}
+M02 12 | direct 12 | cot 6 | sc ['3', '24', '6', '1', '10/3 (= 3.33333)'] -> 3 | other seeds {'2234': '5/2 (= 2.5)', '3234': '2'}
+M03 9 | direct 8 | cot 8 | sc ['8', '8', '8', '8', '18'] -> 8 | other seeds {'2234': '8', '3234': '8'}
+M04 35 | direct 100 | cot 15 | sc ['6', '40', '45', '20', '20'] -> 20 | other seeds {'2234': '45', '3234': '20'}
+M05 10 | direct 60 | cot 10 | sc ['12', '6', None, '120', '8'] -> 12 | other seeds {'2234': '20', '3234': '20'}

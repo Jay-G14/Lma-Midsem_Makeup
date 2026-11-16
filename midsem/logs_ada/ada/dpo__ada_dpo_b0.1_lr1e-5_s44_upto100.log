@@ -1,0 +1,5 @@
+[beta=0.1] step 0 loss 0.693147 (log 2 = 0.693147); full-train-set loss 0.693147; max |margin| 0.00e+00
+  step   25 | train loss 0.6864 margin    0.14 | val loss 0.6819 margin    0.23 acc 0.780
+  step   50 | train loss 0.6729 margin    0.41 | val loss 0.6701 margin    0.48 acc 0.790
+  step   75 | train loss 0.6384 margin    1.19 | val loss 0.6581 margin    0.74 acc 0.790
+Saved /home2/jayant.g/lma-midsem/hindi/checkpoints/midsem/ada_dpo_b0.1_lr1e-5_s44_upto100/adapter.pt; final val {'step': 100, 'loss': 0.6474667167663575, 'margin': 0.9781686162948608, 'chosen_logratio': -0.07099541887640953, 'rejected_logratio': -1.0491640281677246, 'preference_accuracy': 0.8}

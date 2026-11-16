@@ -1,0 +1,11 @@
+{
+  "loss": 3.8975,
+  "perplexity": 49.28,
+  "bits_per_byte": 5.6229,
+  "eval_tokens": 23808000,
+  "model": "base",
+  "description": "Phase 2 pretrained checkpoint",
+  "chunks": 46500,
+  "seconds": 370.6,
+  "method": "Phase 2 PretrainDataset packing: <s> doc </s> concatenated, 513-token chunks"
+}

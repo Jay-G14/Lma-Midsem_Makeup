@@ -1,0 +1,11 @@
+{
+  "loss": 4.0711,
+  "perplexity": 58.62,
+  "bits_per_byte": 5.8734,
+  "eval_tokens": 23808000,
+  "model": "full_ft",
+  "description": "Phase 3 full finetune (all 26.27M parameters)",
+  "chunks": 46500,
+  "seconds": 189.0,
+  "method": "Phase 2 PretrainDataset packing: <s> doc </s> concatenated, 513-token chunks"
+}

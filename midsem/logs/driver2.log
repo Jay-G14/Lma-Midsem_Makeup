@@ -1,0 +1,12 @@
+=== 07:18:23 DPO beta=0.1
+exit 0
+=== 07:20:03 DPO beta=0.5
+exit 0
+=== 07:21:43 eval DPO
+exit 0
+=== 07:42:32 C2 rerun
+exit 0
+=== 07:42:52 plots
+exit 0
+summary exit 1
+=== 07:42:58 done

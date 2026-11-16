@@ -1,0 +1,8 @@
+{
+  "pairs": 2000,
+  "mean_reply_tokens_chosen": 34.9125,
+  "mean_reply_tokens_rejected": 34.9005,
+  "mean_shared_prefix_tokens": 18.172,
+  "mean_shared_fraction": 0.5011176872232564,
+  "mean_tokens_from_first_difference_chosen": 16.7405
+}

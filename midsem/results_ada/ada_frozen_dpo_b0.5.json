@@ -1,0 +1,84 @@
+{
+  "value": {
+    "lr": "3e-5",
+    "step": 500,
+    "val_answer_em": 81.6,
+    "candidates": [
+      {
+        "lr": "1e-5",
+        "step": 100,
+        "val_answer_em": 81.3
+      },
+      {
+        "lr": "1e-5",
+        "step": 200,
+        "val_answer_em": 81.4
+      },
+      {
+        "lr": "1e-5",
+        "step": 300,
+        "val_answer_em": 80.5
+      },
+      {
+        "lr": "1e-5",
+        "step": 400,
+        "val_answer_em": 80.1
+      },
+      {
+        "lr": "1e-5",
+        "step": 500,
+        "val_answer_em": 80.8
+      },
+      {
+        "lr": "3e-5",
+        "step": 100,
+        "val_answer_em": 80.4
+      },
+      {
+        "lr": "3e-5",
+        "step": 200,
+        "val_answer_em": 79.8
+      },
+      {
+        "lr": "3e-5",
+        "step": 300,
+        "val_answer_em": 80.2
+      },
+      {
+        "lr": "3e-5",
+        "step": 400,
+        "val_answer_em": 80.7
+      },
+      {
+        "lr": "3e-5",
+        "step": 500,
+        "val_answer_em": 81.6
+      },
+      {
+        "lr": "1e-4",
+        "step": 100,
+        "val_answer_em": 79.3
+      },
+      {
+        "lr": "1e-4",
+        "step": 200,
+        "val_answer_em": 81.3
+      },
+      {
+        "lr": "1e-4",
+        "step": 300,
+        "val_answer_em": 80.8
+      },
+      {
+        "lr": "1e-4",
+        "step": 400,
+        "val_answer_em": 80.6
+      },
+      {
+        "lr": "1e-4",
+        "step": 500,
+        "val_answer_em": 79.3
+      }
+    ]
+  }
+}

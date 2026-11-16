@@ -1,0 +1,115 @@
+{
+  "train_distinct_sentence_templates": 85,
+  "pools": {
+    "train": {
+      "people": 208,
+      "objects": 61
+    },
+    "val": {
+      "people": 44,
+      "objects": 13
+    },
+    "test": {
+      "people": 45,
+      "objects": 13
+    }
+  },
+  "sets": [
+    {
+      "set": "seen_entities",
+      "size": 1000,
+      "tasks": {
+        "numeric_extremum": 213,
+        "numeric_pair": 203,
+        "transitive": 393,
+        "verbal_comparison": 191
+      },
+      "distinct_names": 269,
+      "names_in_train_pool_pct": 100.0,
+      "names_in_test_pool_pct": 0.0,
+      "sentences": 4132,
+      "distinct_sentence_templates": 85,
+      "sentences_with_training_template_pct": 100.0,
+      "questions_also_in_train": 0
+    },
+    {
+      "set": "unseen_entities",
+      "size": 1000,
+      "tasks": {
+        "numeric_extremum": 186,
+        "numeric_pair": 196,
+        "transitive": 402,
+        "verbal_comparison": 216
+      },
+      "distinct_names": 58,
+      "names_in_train_pool_pct": 0.0,
+      "names_in_test_pool_pct": 100.0,
+      "sentences": 4084,
+      "distinct_sentence_templates": 85,
+      "sentences_with_training_template_pct": 100.0,
+      "questions_also_in_train": 0
+    },
+    {
+      "set": "unseen_wording",
+      "size": 1000,
+      "tasks": {
+        "numeric_extremum": 237,
+        "numeric_pair": 169,
+        "transitive": 412,
+        "verbal_comparison": 182
+      },
+      "distinct_names": 269,
+      "names_in_train_pool_pct": 100.0,
+      "names_in_test_pool_pct": 0.0,
+      "sentences": 4165,
+      "distinct_sentence_templates": 91,
+      "sentences_with_training_template_pct": 0.0,
+      "questions_also_in_train": 0
+    }
+  ],
+  "examples": {
+    "seen_entities": "प्रश्न: गौरव, मंजू और निर्मला तीन दोस्त हैं। निर्मला का वजन गौरव से कम है। मंजू का वजन निर्मला से कम है। क्या गौरव का वजन मंजू से कम है?\nतर्क: निर्मला < गौरव और मंजू < निर्मला है। अर्थात् गौरव > निर्मला और निर्मला > मंजू है। क्रम: गौरव > निर्मला > मंजू है। अतः गौरव > मंजू है। प्रश्न का दावा गौरव < मंजू है।\nउत्तर: नहीं",
+    "unseen_wording": [
+      {
+        "text": "प्रश्न: अमित, महेश और दिनेश के बारे में कुछ जानकारी दी गई है। महेश का भार 31 किग्रा है। दिनेश का भार 40 किग्रा है। अमित का भार 29 किग्रा है। बताइए, सबसे कम वजन किसका है?\nतर्क: 31 = महेश और 40 = दिनेश और 29 = अमित है। सबसे कम मान 29 = अमित है।\nउत्तर: अमित",
+        "question": "प्रश्न: अमित, महेश और दिनेश के बारे में कुछ जानकारी दी गई है। महेश का भार 31 किग्रा है। दिनेश का भार 40 किग्रा है। अमित का भार 29 किग्रा है। बताइए, सबसे कम वजन किसका है?",
+        "reasoning": "तर्क: 31 = महेश और 40 = दिनेश और 29 = अमित है। सबसे कम मान 29 = अमित है।",
+        "answer": "अमित",
+        "candidates": [
+          "अमित",
+          "दिनेश",
+          "महेश"
+        ],
+        "task": "numeric_extremum",
+        "lang": "hindi",
+        "test_set": "unseen_wording"
+      },
+      {
+        "text": "प्रश्न: सागर और शीला के बारे में कुछ जानकारी दी गई है। सागर उम्र में शीला से छोटा है। क्या यह सही है कि शीला की आयु सागर से ज़्यादा है?\nतर्क: कथन के अनुसार सागर < शीला है, अतः शीला > सागर है। प्रश्न का दावा शीला > सागर है।\nउत्तर: हाँ",
+        "question": "प्रश्न: सागर और शीला के बारे में कुछ जानकारी दी गई है। सागर उम्र में शीला से छोटा है। क्या यह सही है कि शीला की आयु सागर से ज़्यादा है?",
+        "reasoning": "तर्क: कथन के अनुसार सागर < शीला है, अतः शीला > सागर है। प्रश्न का दावा शीला > सागर है।",
+        "answer": "हाँ",
+        "candidates": [
+          "हाँ",
+          "नहीं"
+        ],
+        "task": "verbal_comparison",
+        "lang": "hindi",
+        "test_set": "unseen_wording"
+      },
+      {
+        "text": "प्रश्न: तनुज और नितिन के बारे में कुछ जानकारी दी गई है। नितिन 84 वर्ष का है। तनुज 84 वर्ष का है। क्या नितिन की आयु और तनुज की आयु समान है?\nतर्क: 84 = नितिन और 84 = तनुज है। 84 = 84 है, अतः नितिन = तनुज है। प्रश्न का दावा नितिन = तनुज है।\nउत्तर: हाँ",
+        "question": "प्रश्न: तनुज और नितिन के बारे में कुछ जानकारी दी गई है। नितिन 84 वर्ष का है। तनुज 84 वर्ष का है। क्या नितिन की आयु और तनुज की आयु समान है?",
+        "reasoning": "तर्क: 84 = नितिन और 84 = तनुज है। 84 = 84 है, अतः नितिन = तनुज है। प्रश्न का दावा नितिन = तनुज है।",
+        "answer": "हाँ",
+        "candidates": [
+          "हाँ",
+          "नहीं"
+        ],
+        "task": "numeric_pair",
+        "lang": "hindi",
+        "test_set": "unseen_wording"
+      }
+    ]
+  }
+}

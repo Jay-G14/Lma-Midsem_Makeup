@@ -1,0 +1,10 @@
+# Installed by scripts/run.sh after torch (cu121 wheel). Same transformers as the local runs.
+numpy
+tqdm
+matplotlib
+seaborn
+tokenizers
+transformers==5.17.0
+accelerate>=1.1.0
+huggingface_hub
+safetensors

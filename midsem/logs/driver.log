@@ -1,0 +1,16 @@
+=== 05:47:21 C1
+exit 0
+=== 05:53:40 C2
+exit 0
+=== 05:54:07 LR probe to 5 epochs
+exit 0
+=== 06:18:55 chosen LR 0.001
+=== 06:18:55 LoRA r=1
+exit 0
+=== 06:28:41 LoRA r=16
+exit 0
+=== 06:38:46 memory
+exit 0
+=== 06:40:14 eval SFT models
+exit 0
+=== 07:18:14 done

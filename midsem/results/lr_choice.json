@@ -1,0 +1,98 @@
+{
+  "chosen_lr": 0.001,
+  "criterion": "lowest best-epoch reasoning-validation loss, r=4, 5 epochs",
+  "probe": [
+    {
+      "lr": 0.0001,
+      "tag": "lrprobe_r4_lr1e-4",
+      "epochs": 5,
+      "best_epoch": 5,
+      "best_val_reasoning_loss": 0.28358140110969543,
+      "val_loss_by_epoch": [
+        6.3951,
+        0.8066,
+        0.4849,
+        0.3866,
+        0.3337,
+        0.2836
+      ],
+      "ppl_by_epoch": [
+        57.95,
+        60.86,
+        60.51,
+        60.18,
+        59.87,
+        59.84
+      ]
+    },
+    {
+      "lr": 0.0003,
+      "tag": "lrprobe_r4_lr3e-4",
+      "epochs": 5,
+      "best_epoch": 5,
+      "best_val_reasoning_loss": 0.16031678706407548,
+      "val_loss_by_epoch": [
+        6.3951,
+        0.3942,
+        0.25,
+        0.2109,
+        0.2077,
+        0.1603
+      ],
+      "ppl_by_epoch": [
+        57.95,
+        60.55,
+        60.17,
+        59.9,
+        59.56,
+        59.63
+      ]
+    },
+    {
+      "lr": 0.001,
+      "tag": "lrprobe_r4_lr1e-3",
+      "epochs": 5,
+      "best_epoch": 5,
+      "best_val_reasoning_loss": 0.13612929692864417,
+      "val_loss_by_epoch": [
+        6.3951,
+        0.2427,
+        0.2298,
+        0.1606,
+        0.1546,
+        0.1361
+      ],
+      "ppl_by_epoch": [
+        57.95,
+        61.07,
+        60.9,
+        60.65,
+        60.51,
+        60.89
+      ]
+    },
+    {
+      "lr": 0.003,
+      "tag": "lrprobe_r4_lr3e-3",
+      "epochs": 5,
+      "best_epoch": 5,
+      "best_val_reasoning_loss": 0.2484425682425499,
+      "val_loss_by_epoch": [
+        6.3951,
+        0.325,
+        0.2545,
+        0.2518,
+        0.2713,
+        0.2484
+      ],
+      "ppl_by_epoch": [
+        57.95,
+        64.04,
+        64.76,
+        64.15,
+        64.09,
+        64.67
+      ]
+    }
+  ]
+}

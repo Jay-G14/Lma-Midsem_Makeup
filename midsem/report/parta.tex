@@ -1,0 +1,171 @@
+% ===================== PART A =====================
+\section{Part A: Adapting Model H with LoRA and DPO}
+\textbf{Model and what is reused.} Model H is the project's Phase 2 Hindi decoder (\texttt{final\_model.pt}, copied with the project code and data into \texttt{midsem/project/}): 6 pre-LN blocks, $d{=}512$, 8 heads, $d_{ff}{=}1536$, tied 20k-BPE embeddings, \textbf{26,268,672} parameters. To keep every number comparable with Phase 3, everything else is reused as is:
+\begin{itemize}[leftmargin=*,nosep]
+\item the Phase 3 data (12,000 / 1,000 / 1,000 comparative-reasoning questions in four task families);
+\item its dataset class: the question is masked from the loss, \texttt{</s>} is appended, and 15\% pretraining replay adds 2,117 documents;
+\item its evaluation: the prompt is ``\dn{प्रश्न: …}\textbackslash n\dn{तर्क:}'', decoding is greedy, and the \emph{answer EM} is the first word after the model's own ``\dn{उत्तर:}'';
+\item two drift measures: Phase 3's PPL on the first 500 pretraining-validation documents, and the PPL of the \emph{whole} validation split (23.8M tokens) with the Phase 2 packing.
+\end{itemize}
+The tokenizer is unchanged, and all data, including the preference pairs, is Hindi.
+
+\textbf{How the numbers were produced.} A first single-seed pass ran on my laptop GPU (RTX 4050; appendix). The numbers in the tables below come from a second, fuller study on one Ada node (3$\times$RTX 2080 Ti + RTX 4070; \texttt{midsem/ada/}, job 84119):
+\begin{itemize}[leftmargin=*,nosep]
+\item the LoRA learning rate is chosen \emph{per rank} from $\{3\cdot10^{-4},10^{-3},3\cdot10^{-3}\}$;
+\item every reported configuration is trained with 3 seeds and reported as mean$\pm$sd;
+\item the DPO learning rate and number of steps are chosen on validation answer accuracy;
+\item every selection uses the validation split only.
+\end{itemize}
+
+\textbf{Three test sets.} The project shipped only one test set, the \emph{unseen-entity} set (its names come from a test-only pool). I generated the two missing ones, 1,000 questions each, with the same generator code, the same task mix and the same entity pools (re-created from the Phase 3 seed and checked against the shipped splits):
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{seen entities}: training templates and training-pool names, every text deduplicated against all Phase 3 texts;
+\item \emph{unseen wording}: training-pool names, but every sentence frame of the question is replaced by a paraphrase that never occurs in training, e.g.\ ``\dn{अमित कद में रोहित से लंबा है}'' for ``\dn{अमित रोहित से लंबा है}'', or ``\dn{बताइए, सबसे ज़्यादा लंबाई किसकी है?}''. The reasoning the model must write is unchanged.
+\end{itemize}
+Each set changes exactly one factor relative to training (Table~\ref{tab:sets}). Chance (a uniform guess over each question's candidate answers) is about 40\% on all three. The Phase 3 full finetune, re-scored with this pipeline, reproduces its Phase 3 unseen-entity score exactly (81.0\% answer EM, 72.9\% chain EM).
+
+\begin{table}[h]
+\centering\footnotesize
+\caption{The three test sets (1,000 questions each). Audit: \texttt{results/test\_sets\_audit.json}; templates are sentences with names masked as \textless E\textgreater\ and numbers as \textless N\textgreater.}
+\label{tab:sets}
+\begin{tabular}{lccc}
+\toprule
+Set & train-pool names & training templates & in train\\
+\midrule
+Seen entities & 100\% & 100\% & 0\\
+Unseen entities (Phase 3) & 0\% & 100\% & 0\\
+Unseen wording & 100\% & 0\% & 0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{A1. LoRA from scratch}
+\texttt{part\_a/lora.py} wraps each of the 24 target matrices ($W_Q,W_K,W_V,W_O$ in all 6 blocks, each $512\times512$) as
+\[ h = W_0x+b_0+\tfrac{\alpha}{r}\,B(Ax),\qquad A\in\mathbb{R}^{r\times512},\ B\in\mathbb{R}^{512\times r}. \]
+\begin{itemize}[leftmargin=*,nosep]
+\item $W_0$ and $b_0$ are frozen; $A$ is Kaiming-uniform and $B$ is all zeros.
+\item $\alpha=16$ for every rank, so $\alpha/r$ rescales the update with the rank (as in Hu et al.).
+\item Everything else is frozen too: embeddings, LayerNorms, FFNs and biases.
+\item The trainable count is $24\cdot r\cdot(512+512)$ (Table~\ref{tab:params}).
+\end{itemize}
+
+\begin{table}[h]
+\centering\footnotesize
+\caption{A1: trainable parameters (share of the 26.27M + LoRA total), step-0 logit identity and step-0 gradient norms (\texttt{results/lora\_sanity.json}).}
+\label{tab:params}
+\begin{tabular}{lcccc}
+\toprule
+& trainable & share & logits identical & $\|\nabla_A\|$ / $\|\nabla_B\|$\\
+\midrule
+$r=1$ & \ParOne & \ShareOne\% & \IdentOne\ ($|\Delta|_{\max}{=}0$) & 0 / \GradOne\\
+$r=4$ & \ParFour & \ShareFour\% & \IdentFour\ ($|\Delta|_{\max}{=}0$) & 0 / \GradFour\\
+$r=16$ & \ParSixteen & \ShareSixteen\% & \IdentSixteen\ ($|\Delta|_{\max}{=}0$) & 0 / \GradSixteen\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Step 0.} On a batch of \ProbeShape\ tokens (16 reasoning texts and 8 pretraining documents), the LoRA model's logits are \emph{bit-identical} to the pretrained model's for all three ranks (\texttt{torch.equal}, max $|\Delta|=0.0$).
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Why:} $B=0$, so every entry of $B(Ax)$ is a sum of products that each have a zero factor, i.e.\ exactly 0.0. Adding 0.0 leaves $W_0x+b_0$ unchanged in IEEE arithmetic, and the frozen path runs the same computation.
+\item \emph{The gradients agree:} at step 0, $\partial L/\partial A=\frac{\alpha}{r}B^{\top}g\,x^{\top}$ is exactly 0, while $\partial L/\partial B=\frac{\alpha}{r}g\,(Ax)^{\top}\neq0$. The first update therefore moves only $B$.
+\item \emph{The check is not vacuous:} after one AdamW step the logits differ by up to \AfterFour\ ($r=4$).
+\item $\|\nabla_B\|$ halves with every 4$\times$ rank (\GradOne, \GradFour, \GradSixteen): it scales as $\frac{\alpha}{r}\|Ax\|\propto\alpha/\sqrt{r}$, which is the $\alpha/r$ scaling at work.
+\end{itemize}
+
+\subsection*{A2. Rank sweep}
+\textbf{Recipe.} The Phase 3 recipe is kept: AdamW with weight decay 0.01, constant LR, clipping 1.0, batch 8, 5 epochs, and the best epoch chosen by reasoning-validation loss. Three things change:
+\begin{itemize}[leftmargin=*,nosep]
+\item only $A$ and $B$ train;
+\item the LR is chosen per rank on validation loss (seed 42; grid in the appendix): \AdaLrOne, \AdaLrFour\ and \AdaLrSixteen\ for $r=1,4,16$;
+\item every rank is then trained with seeds 42, 43 and 44.
+\end{itemize}
+Memory is measured on identical batches (Table~\ref{tab:sweep}, last columns).
+
+\begin{table*}[t]
+\centering\footnotesize
+\caption{A2: answer EM (\%) on validation and the three test sets. LoRA rows are mean$\pm$sd over 3 seeds at each rank's chosen LR; the full finetune is the Phase 3 checkpoint, re-scored on the same Ada node. Drift PPL: 500 documents / whole validation split. Memory: \MemGpu, batch 8, \MemSteps\ identical steps.}
+\label{tab:sweep}
+\begin{tabular}{lcccccccc}
+\toprule
+& Validation & Seen ent. & Unseen ent. & Unseen word. & PPL (500) & PPL (full) & AdamW MB & peak MB\\
+\midrule
+Pretrained base & -- & -- & 0.0\textsuperscript{*} & -- & \PplBase & \AdaPplFullBase & -- & --\\
+Full FT (Phase 3 checkpoint) & \AdaAccFullVal & \AdaAccFullSeen & \AdaAccFullUnEnt & \AdaAccFullUnWord & \AdaPplFull & \AdaPplFullFull & \MemOptFull & \MemPeakFull\\
+Full FT, 3 seeds (26.27M) & \FullSeedsVal & \FullSeedsSeen & \FullSeedsUnEnt & \FullSeedsUnWord & \FullSeedsPpl & -- & \MemOptFull & \MemPeakFull\\
+LoRA $r=1$ (24,576) & \AdaAccOneVal & \AdaAccOneSeen & \AdaAccOneUnEnt & \AdaAccOneUnWord & \AdaPplOne & \AdaPplFullOne & \MemOptLoraOne & \MemPeakLoraOne\\
+LoRA $r=4$ (98,304) & \AdaAccFourVal & \AdaAccFourSeen & \AdaAccFourUnEnt & \AdaAccFourUnWord & \AdaPplFour & \AdaPplFullFour & \MemOptLoraFour & \MemPeakLoraFour\\
+LoRA $r=16$ (393,216) & \AdaAccSixteenVal & \AdaAccSixteenSeen & \AdaAccSixteenUnEnt & \AdaAccSixteenUnWord & \AdaPplSixteen & \AdaPplFullSixteen & \MemOptLoraSixteen & \MemPeakLoraSixteen\\
+\bottomrule
+\end{tabular}\\[1pt]
+{\scriptsize *Phase 3: the pretrained model never writes ``\dn{उत्तर:}''. Best validation reasoning loss: full FT \ValLossFull; LoRA $r=1/4/16$: \AdaLossOne\ / \AdaLossFour\ / \AdaLossSixteen. Chain EM in the appendix. A single run's accuracy on 1,000 questions has a 95\% interval of about $\pm$3 points.}
+\end{table*}
+
+\input{parta_results_a2}
+
+\subsection*{A3. Preference pairs}
+\texttt{part\_a/build\_preference\_pairs.py} builds \textbf{2,000 pairs from the training split}, with the Phase 3 task mix (800 / 400 / 400 / 400).
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Prompt:} the test-time prompt ``\dn{प्रश्न: …}\textbackslash n\dn{तर्क:}''.
+\item \emph{Chosen:} the gold reply (reasoning and answer).
+\item \emph{Rejected:} the same chain up to the \emph{decisive step}, which it gets wrong, after which it follows the error consistently to a wrong answer from the question's own candidates. That answer is the other entity of the comparison or the other yes/no word.
+\end{itemize}
+The decisive step depends on the question type:
+\begin{itemize}[leftmargin=*,nosep]
+\item largest/smallest: the order is built with the two end entities swapped (``\dn{क्रम: B > A > C}'');
+\item numeric extremum: the runner-up value is picked;
+\item numeric pair: the two numbers are compared the wrong way round (``\dn{302 > 884}'');
+\item yes/no: the asked relation is read backwards.
+\end{itemize}
+Questions with equal values are skipped, since ``='' has no one-step flip. A further 400 \emph{validation} pairs built from the validation split are used only for monitoring.
+
+\textbf{Keeping test entities and wordings out} (audit in \texttt{results/preference\_pairs\_audit.json}):
+\begin{itemize}[leftmargin=*,nosep]
+\item only training questions are used, so 100\% of the names come from the training pool, and 0 test-pool or validation-pool names appear;
+\item 100\% of the prompt sentences use a training template, so none of the held-out unseen-wording frames appears;
+\item no prompt equals a question of any of the three test sets. The seen-entity set shares names by design, but its texts were deduplicated against training.
+\end{itemize}
+
+\subsection*{A4. DPO from scratch}
+\texttt{part\_a/dpo.py} implements
+\[ L=-\log\sigma\big(\beta\,[\Delta(y_w)-\Delta(y_l)]\big),\quad \Delta(y)=\log\tfrac{\pi_\theta(y|x)}{\pi_{\rm ref}(y|x)}, \]
+where $\log\pi(y|x)$ is the sum of the reply tokens' log-probabilities (including \texttt{</s>}, prompt excluded) and $\Delta(y_w)-\Delta(y_l)$ is the \emph{margin}.
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Policy:} the best LoRA model on validation (\AdaBest), whose $A,B$ keep training with $W_0$ frozen.
+\item \emph{Reference:} a frozen copy of that same model.
+\item Dropout is off in both. AdamW, no weight decay, batch 8 pairs, up to 2 epochs (500 steps).
+\item \texttt{part\_a/test\_dpo.py} checks the batched log-probabilities against per-sequence teacher forcing.
+\end{itemize}
+
+\textbf{Protocol.} Both $\beta$ get the same treatment:
+\begin{itemize}[leftmargin=*,nosep]
+\item a sweep over LR $\in\{10^{-5},3\cdot10^{-5},10^{-4}\}$, with the policy saved every 100 steps and every saved policy scored on the validation split (Figure~\ref{fig:dposweep});
+\item the (LR, step) with the best validation EM is retrained with two more seeds;
+\item the original single run (LR $10^{-4}$, 500 steps) is kept as a fixed-protocol comparison.
+\end{itemize}
+
+\textbf{Loss at step 0: $\ln 2=0.693147$.} It is the same in every one of the \AdaStepZeroRuns\ Ada DPO runs and both laptop runs (largest deviation from $\ln2$: \AdaStepZeroDev).
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Why:} the policy and the reference are the same network, so both log-ratios are exactly 0, the margin is 0, and $-\log\sigma(0)=\ln2$ for every pair, whatever $\beta$ and the data are.
+\item \emph{It is not a stationary point:} the step-0 gradient is $-\frac{\beta}{2}\big(\nabla\log\pi_\theta(y_w|x)-\nabla\log\pi_\theta(y_l|x)\big)$.
+\item \emph{Shared tokens cancel:} tokens the two replies share before the decisive step get identical log-probabilities, so only the tokens from that step on carry the preference. On average the replies share their first \PairSharedTok\ of \PairReplyTok\ tokens (\PairSharedPct\%).
+\end{itemize}
+Figure~\ref{fig:dpo} plots the mean margin for both $\beta$ at every LR.
+
+\begin{table*}[t]
+\centering\footnotesize
+\caption{A4/A5: after DPO from the best LoRA model (\AdaBest). ``Chosen'' rows: the (LR, steps) with the best validation EM per $\beta$, mean$\pm$sd over 3 seeds. ``Fixed'' rows: the original protocol (LR $10^{-4}$, 500 steps, seed 42). ``Answered'': share of unseen-entity questions on which the model writes ``\dn{उत्तर:}''.}
+\label{tab:dpo}
+\begin{tabular}{llccccccc}
+\toprule
+& LR, steps & Validation & Seen ent. & Unseen ent. & Unseen word. & Answered & PPL (500) & PPL (full)\\
+\midrule
+Best LoRA (= reference) & -- & \AdaAccBestVal & \AdaAccBestSeen & \AdaAccBestUnEnt & \AdaAccBestUnWord & -- & \AdaPplBest & \AdaPplFullBest\\
+DPO $\beta=0.1$, chosen & \AdaDpoLowLr, \AdaDpoLowStep & \AdaDpoLowVal & \AdaDpoLowSeen & \AdaDpoLowUnEnt & \AdaDpoLowUnWord & \AdaDpoLowAnsUnEnt\% & \AdaDpoLowPpl & \AdaDpoLowPplFull\\
+DPO $\beta=0.5$, chosen & \AdaDpoHighLr, \AdaDpoHighStep & \AdaDpoHighVal & \AdaDpoHighSeen & \AdaDpoHighUnEnt & \AdaDpoHighUnWord & \AdaDpoHighAnsUnEnt\% & \AdaDpoHighPpl & \AdaDpoHighPplFull\\
+DPO $\beta=0.1$, fixed & 1e-4, 500 & \AdaFixLowVal & \AdaFixLowSeen & \AdaFixLowUnEnt & \AdaFixLowUnWord & \AdaFixLowAnsUnEnt\% & \AdaFixLowPpl & \AdaFixLowPplFull\\
+DPO $\beta=0.5$, fixed & 1e-4, 500 & \AdaFixHighVal & \AdaFixHighSeen & \AdaFixHighUnEnt & \AdaFixHighUnWord & \AdaFixHighAnsUnEnt\% & \AdaFixHighPpl & \AdaFixHighPplFull\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\input{parta_results_a4}
